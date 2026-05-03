@@ -1,0 +1,68 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 40px;
+    background: #607597;
+    color: white;
+}
+
+.nav-links a {
+    margin: 0 12px;
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.nav-links a:hover {
+    text-decoration: underline;
+}
+
+/* About */
+.about {
+    text-align: center;
+    padding: 50px;
+    background: #f5f7fa;
+}
+
+/* Mission */
+.mission {
+    text-align: center;
+    padding: 40px;
+}
+
+/* Team */
+.team {
+    text-align: center;
+    padding: 40px;
+    background: #f9fafb;
+}
+
+.team-cards {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap; /* 🔥 important for responsiveness */
+}
+
+.member {
+    background: white;
+    padding: 20px;
+    width: 200px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    padding: 20px;
+    background: #ddd;
+    margin-top: 30px;
+}

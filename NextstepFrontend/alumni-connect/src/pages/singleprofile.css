@@ -1,0 +1,220 @@
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background: #f4f6f9;
+}
+
+/* BACK BUTTON */
+.back {
+  padding: 15px 40px;
+  color: #2f6fd6;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.back:hover {
+  text-decoration: underline;
+}
+
+/* PROFILE CARD */
+.profile-card {
+  background: linear-gradient(135deg, #607597, #4c5d7a);
+  color: white;
+  margin: 20px 40px;
+  padding: 25px;
+  border-radius: 15px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* LEFT IMAGE */
+.profile-img {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  border: 4px solid white;
+}
+
+/* CENTER CONTENT */
+.center {
+  flex: 1;
+  margin-left: 20px;
+}
+
+.center h1 {
+  font-size: 24px;
+}
+
+.center p {
+  margin-top: 10px;
+  font-size: 15px;
+}
+
+.google-logo {
+  width: 18px;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+/* LOCATION + YEAR */
+.center span {
+  display: block;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+/* TAGS */
+.tags {
+  margin-top: 10px;
+}
+
+.tags span {
+  padding: 5px 12px;
+  border-radius: 15px;
+  margin-right: 10px;
+  font-size: 12px;
+}
+
+.green {
+  background: #28a745;
+}
+
+.yellow {
+  background: orange;
+}
+
+/* BUTTONS */
+.primary {
+  background: #1e4fbf;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin: 5px;
+  cursor: pointer;
+}
+
+.secondary {
+  background: white;
+  color: #2f6fd6;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin: 5px;
+  cursor: pointer;
+}
+
+.primary:hover {
+  background: #163c94;
+}
+
+.secondary:hover {
+  background: #eef3ff;
+}
+
+/* FULL WIDTH BUTTON */
+.full {
+  width: 100%;
+  margin-top: 10px;
+}
+
+/* STATS */
+.stats {
+  display: flex;
+  justify-content: space-around;
+  margin: 20px 40px;
+  gap: 15px;
+}
+
+.stat-box {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 30%;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* CONTENT LAYOUT */
+.content {
+  display: flex;
+  gap: 20px;
+  padding: 20px 40px;
+}
+
+.left-content,
+.right-content {
+  width: 50%;
+}
+
+/* CARD */
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.card h3 {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+/* SKILLS */
+.skills span {
+  display: inline-block;
+  background: #eef2f7;
+  padding: 5px 10px;
+  margin: 5px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+/* LIST */
+.card ul {
+  padding-left: 20px;
+}
+
+.card ul li {
+  margin-bottom: 6px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+
+  .profile-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .center {
+    margin-left: 0;
+    margin-top: 10px;
+  }
+
+  .stats {
+    flex-direction: column;
+  }
+
+  .stat-box {
+    width: 100%;
+  }
+
+  .content {
+    flex-direction: column;
+  }
+
+  .left-content,
+  .right-content {
+    width: 100%;
+  }
+}

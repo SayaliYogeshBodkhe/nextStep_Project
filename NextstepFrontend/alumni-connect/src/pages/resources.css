@@ -1,0 +1,125 @@
+/* VARIABLES */
+:root {
+    --primary: #0F766E;
+    --bg: #F8FAFC;
+    --text: #111827;
+    --subtext: #6B7280;
+}
+
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", sans-serif;
+}
+
+body {
+    background: var(--bg);
+}
+
+/* ABOUT */
+.about {
+    text-align: center;
+    padding: 50px;
+    background: #f5f7fa;
+}
+
+.mission {
+    text-align: center;
+    padding: 40px;
+}
+
+.team {
+    text-align: center;
+    padding: 40px;
+    background: #f9fafb;
+}
+
+.team-cards {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.member {
+    background: white;
+    padding: 20px;
+    width: 200px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* HERO */
+.hero {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.hero h1 {
+    font-size: 50px;
+    margin-bottom: 15px;
+}
+
+.hero p {
+    color: var(--subtext);
+    font-size: 18px;
+    max-width: 600px;
+    margin: auto;
+}
+
+/* CATEGORY */
+.categories {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+}
+
+.cat {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+}
+
+/* ICON COLORS */
+.icon {
+    padding: 12px;
+    border-radius: 10px;
+    color: white;
+}
+
+.templates { background: #22C55E; }
+.blog { background: #FACC15; color: black; }
+.guides { background: #EC4899; }
+.videos { background: #8B5CF6; }
+.events { background: #F97316; }
+
+/* BUTTONS */
+.login {
+    border: 1px solid #ccc;
+    background: white;
+}
+
+.signup {
+    background: var(--primary);
+    color: white;
+}
+
+/* FOOTER */
+.footer {
+    text-align: center;
+    background: #eee;
+    padding: 15px;
+    margin-top: 40px;
+}
+
+/* DIVIDER */
+hr {
+    margin: 60px auto;
+    width: 80%;
+    border: 0.5px solid #ddd;
+}

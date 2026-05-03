@@ -1,0 +1,205 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* Hero */
+.hero {
+    text-align: center;
+    padding: 80px 20px;
+    background: #e0ecff;
+}
+
+.hero h1 {
+    font-size: 40px;
+}
+
+.hero button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background: #607597;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.hero button:hover {
+    background: #4a5f7a;
+}
+
+/* Features */
+.features {
+    text-align: center;
+    padding: 40px;
+}
+
+.feature-cards {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.feature {
+    background: #f5f7fa;
+    padding: 20px;
+    width: 200px;
+    border-radius: 10px;
+    transition: 0.3s;
+}
+
+.feature:hover {
+    transform: translateY(-5px);
+}
+
+/* Events */
+.events {
+    text-align: center;
+    padding: 40px;
+    background: #f9fafb;
+}
+
+.cards {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    width: 220px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card button {
+    margin-top: 10px;
+    padding: 8px 15px;
+    background: #607597;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.card button:hover {
+    background: #4a5f7a;
+}
+
+/* Popup */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.6);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    z-index: 1000;
+}
+
+.popup {
+    background: white;
+    padding: 30px;
+    width: 350px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    animation: popupShow 0.3s ease;
+}
+
+.popup h2 {
+    margin-bottom: 20px;
+    color: #607597;
+}
+
+.popup input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    outline: none;
+}
+
+.popup input:focus {
+    border-color: #607597;
+}
+
+.popup button {
+    padding: 10px 15px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.popup button[type="submit"] {
+    background: #607597;
+    color: white;
+}
+
+.popup button[type="submit"]:hover {
+    background: #4a5f7a;
+}
+
+.popup button[type="button"] {
+    background: #ddd;
+}
+
+.popup button[type="button"]:hover {
+    background: #bbb;
+}
+
+/* CTA */
+.cta {
+    text-align: center;
+    padding: 40px;
+    background: #607597;
+    color: white;
+}
+
+.cta button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background: white;
+    color: #607597;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.cta button:hover {
+    background: #ddd;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    padding: 20px;
+    background: #ddd;
+    margin-top: 30px;
+}
+
+/* Animation */
+@keyframes popupShow {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
