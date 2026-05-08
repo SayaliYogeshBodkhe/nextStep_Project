@@ -15,6 +15,8 @@ import SingleProfile from "./pages/SingleProfile";
 import Signup from "./pages/Signup";
 import AdminDashboard from "./pages/AdminDashboard";
 
+import RoadmapDetails from "./pages/RoadmapDetails";
+
 // ✅ Admin Protected Route
 const AdminRoute = ({ children }) => {
   const userType = localStorage.getItem("userType");
@@ -60,6 +62,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/single-profile" element={<SingleProfile />} />
+        
 
         {/* Admin Protected Route */}
         <Route
@@ -70,6 +73,7 @@ function App() {
             </AdminRoute>
           }
         />
+        <Route path="/roadmap/:id" element={<RoadmapDetails />} />
       </Routes>
     </BrowserRouter>
   );

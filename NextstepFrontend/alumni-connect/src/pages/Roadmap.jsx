@@ -1,140 +1,123 @@
+import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import "./roadmap.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch, faAngleDown } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 
 function Roadmap() {
+  const [roadmaps, setRoadmaps] = useState([]);
+  const [search, setSearch] = useState("");
+  const [activeCategory, setActiveCategory] = useState("All");
+  const navigate = useNavigate();
+
+  /* ================= FETCH ROADMAPS ================= */
+  useEffect(() => {
+    fetchRoadmaps();
+  }, []);
+
+  const fetchRoadmaps = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/getRoadmaps");
+      const data = await res.json();
+
+      if (data.status === "ok") {
+        setRoadmaps(data.data);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  /* ================= FILTER ================= */
+  const filtered = roadmaps.filter((r) => {
+    const matchSearch =
+      (r.role || "").toLowerCase().includes(search.toLowerCase()) ||
+      (r.company || "").toLowerCase().includes(search.toLowerCase());
+
+    const matchCategory =
+      activeCategory === "All" || r.category === activeCategory;
+
+    return matchSearch && matchCategory;
+  });
+
+  /* ================= UNIQUE CATEGORIES ================= */
+  const categories = [
+    "All",
+    ...new Set(roadmaps.map((r) => r.category).filter(Boolean)),
+  ];
+
   return (
     <>
       <Navbar />
 
       {/* HEADER */}
-      <div className="header">
-        <h2>Placed Juniors</h2>
-      </div>
-
-      {/* TITLE */}
-      <div className="title">
+      <div className="roadmap-header">
         <h1>Career Roadmaps</h1>
-        <p>Explore step-by-step guides to land your dream job</p>
+        <p>Step-by-step paths to your dream job</p>
       </div>
 
-      {/* FILTER BAR */}
-      <div className="filters">
-        <div className="search-box">
-          <FontAwesomeIcon icon={faSearch} />
-          <input type="text" placeholder="Search by role or company" />
-        </div>
-
-        <select><option>Year</option></select>
-        <select><option>Company</option></select>
-        <select><option>Location</option></select>
-
-        <button className="filter-btn">
-          Filter <FontAwesomeIcon icon={faAngleDown} />
-        </button>
+      {/* SEARCH */}
+      <div className="roadmap-search">
+        <input
+          type="text"
+          placeholder="Search role or company..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
       </div>
 
-      {/* TABS */}
-      <div className="tabs">
-        <button className="active">By Role</button>
-        <button>By Company</button>
-
-        <button className="view-all">View All →</button>
+      {/* CATEGORY FILTER */}
+      <div className="category-bar">
+        {categories.map((cat, i) => (
+          <button
+            key={i}
+            className={activeCategory === cat ? "active-chip" : ""}
+            onClick={() => setActiveCategory(cat)}
+          >
+            {cat}
+          </button>
+        ))}
       </div>
 
-      {/* CATEGORY CHIPS */}
-      <div className="chips">
-        <span className="chip active">💻 Software Engineering</span>
-        <span className="chip">📊 Data Science</span>
-        <span className="chip">🎨 UI/UX Design</span>
-        <span className="chip">☁️ Cloud Engineering</span>
-      </div>
+      {/* ROADMAP GRID */}
+      <div className="roadmap-grid">
+        {filtered.map((item) => (
+          <div className="roadmap-card" key={item._id}>
 
-      {/* ROADMAP CARDS */}
-      <div className="container">
+            {/* HEADER */}
+            <div className="card-top">
+              <img src={item.icon} alt="icon" />
+              <div>
+                <h3>{item.role}</h3>
+                <p>{item.company}</p>
+              </div>
+            </div>
 
-        {/* CARD 1 */}
-        <div className="card">
-          <div className="card-header">
-            <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" alt="icon" />
-            <h3>Software Engineer</h3>
+            {/* META */}
+            <div className="meta">
+              <span>{item.location}</span>
+              <span>{item.year}</span>
+              <span>{item.category}</span>
+            </div>
+
+            {/* STEPS PREVIEW */}
+            <div className="steps">
+              {item.steps?.slice(0, 3).map((step, index) => (
+                <div className="step" key={index}>
+                  <div className="circle">{index + 1}</div>
+                  <p>{step}</p>
+                </div>
+              ))}
+            </div>
+
+            <button
+              className="learn-btn"
+              onClick={() => navigate(`/roadmap/${item._id}`)}
+            >
+              View Full Roadmap
+            </button>
+
           </div>
-
-          <div className="steps">
-            <div className="step">
-              <div className="circle">1</div>
-              <p>Learn DSA</p>
-            </div>
-
-            <div className="step">
-              <div className="circle">2</div>
-              <p>Backend Development</p>
-            </div>
-
-            <div className="step">
-              <div className="circle">3</div>
-              <p>Practice Coding</p>
-            </div>
-          </div>
-
-          <button className="primary">Learn More</button>
-        </div>
-
-        {/* CARD 2 */}
-        <div className="card">
-          <div className="card-header">
-            <img src="https://cdn-icons-png.flaticon.com/512/888/888859.png" alt="icon" />
-            <h3>Data Scientist</h3>
-          </div>
-
-          <div className="steps">
-            <div className="step">
-              <div className="circle">1</div>
-              <p>Python & SQL</p>
-            </div>
-
-            <div className="step">
-              <div className="circle">2</div>
-              <p>Machine Learning</p>
-            </div>
-
-            <div className="step">
-              <div className="circle">3</div>
-              <p>Build Projects</p>
-            </div>
-          </div>
-
-          <button className="primary">Learn More</button>
-        </div>
-
-        {/* CARD 3 */}
-        <div className="card">
-          <div className="card-header">
-            <img src="https://cdn-icons-png.flaticon.com/512/5968/5968705.png" alt="icon" />
-            <h3>UI/UX Designer</h3>
-          </div>
-
-          <div className="steps">
-            <div className="step">
-              <div className="circle">1</div>
-              <p>Design Basics</p>
-            </div>
-
-            <div className="step">
-              <div className="circle">2</div>
-              <p>Figma</p>
-            </div>
-
-            <div className="step">
-              <div className="circle">3</div>
-              <p>Portfolio</p>
-            </div>
-          </div>
-
-          <button className="primary">Learn More</button>
-        </div>
-
+        ))}
       </div>
     </>
   );

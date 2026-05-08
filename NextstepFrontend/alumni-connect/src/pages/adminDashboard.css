@@ -6,6 +6,41 @@
   position: relative;
   z-index: 1;
 }
+/* ================= ROADMAP TABLE ICON ================= */
+
+.roadmap-table-img{
+  width: 65px;
+  height: 65px;
+  object-fit: contain;
+
+  padding: 10px;
+
+  border-radius: 18px;
+
+  background: linear-gradient(
+    135deg,
+    #eef2ff,
+    #ffffff
+  );
+
+  border: 2px solid #e0e7ff;
+
+  box-shadow:
+    0 8px 20px rgba(79,70,229,0.12),
+    inset 0 2px 4px rgba(255,255,255,0.8);
+
+  transition: 0.3s;
+}
+
+/* HOVER EFFECT */
+
+.roadmap-table tbody tr:hover .roadmap-table-img{
+  transform: scale(1.08) rotate(-5deg);
+
+  box-shadow:
+    0 12px 24px rgba(79,70,229,0.22),
+    inset 0 2px 4px rgba(255,255,255,0.9);
+}
 
 /* ===== Sidebar ===== */
 .sidebar {

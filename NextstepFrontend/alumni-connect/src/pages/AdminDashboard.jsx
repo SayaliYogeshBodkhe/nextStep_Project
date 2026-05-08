@@ -7,6 +7,7 @@ function AdminDashboard() {
   const [alumni, setAlumni] = useState([]);
   const [events, setEvents] = useState([]);
   const [students, setStudents] = useState([]);
+  const [roadmaps, setRoadmaps] = useState([]);
 
   const [showStudents, setShowStudents] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -18,6 +19,28 @@ function AdminDashboard() {
   const [filter, setFilter] = useState("All");
 
   const [activeTab, setActiveTab] = useState("users");
+
+  /* ================= ROADMAP ================= */
+  const [roadmapData, setRoadmapData] = useState({
+  role: "",
+  category: "",
+  icon: "",
+  company: "",
+  location: "",
+  year: "",
+
+  description: "",
+  duration: "",
+  salary: "",
+  difficulty: "",
+
+  skills: [],
+  tools: [],
+  resources: [],
+  projects: [],
+
+  steps: ["", "", ""],
+});
 
   const [userForm, setUserForm] = useState({
     name: "",
@@ -44,7 +67,7 @@ function AdminDashboard() {
 
   const navigate = useNavigate();
 
-  /* AUTH */
+  /* ================= AUTH ================= */
   useEffect(() => {
     const role = localStorage.getItem("userType");
 
@@ -52,36 +75,61 @@ function AdminDashboard() {
     else if (role !== "Admin") navigate("/");
   }, [navigate]);
 
-  /* FETCH */
+  /* ================= FETCH ================= */
   const fetchUsers = async () => {
     const res = await fetch("http://localhost:5000/getUsers");
     const data = await res.json();
-    if (data.status === "ok") setUsers(data.data);
-  };
 
+    if (data.status === "ok") {
+      setUsers(data.data);
+    }
+  };
+const fetchRoadmaps = async () => {
+  try {
+    const res = await fetch(
+      "http://localhost:5000/getRoadmaps"
+    );
+
+    const data = await res.json();
+
+    if (data.status === "ok") {
+      setRoadmaps(data.data);
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
   const fetchAlumni = async () => {
     const res = await fetch("http://localhost:5000/getAlumni");
     const data = await res.json();
-    if (data.status === "ok") setAlumni(data.data);
+
+    if (data.status === "ok") {
+      setAlumni(data.data);
+    }
   };
 
   const fetchEvents = async () => {
     const res = await fetch("http://localhost:5000/getEvents");
     const data = await res.json();
-    if (data.status === "ok") setEvents(data.data);
+
+    if (data.status === "ok") {
+      setEvents(data.data);
+    }
   };
 
   useEffect(() => {
-    fetchUsers();
+     fetchUsers();
     fetchAlumni();
     fetchEvents();
+    fetchRoadmaps();
   }, []);
 
-  /* DELETE */
+  /* ================= DELETE ================= */
   const deleteUser = async (id) => {
     await fetch(`http://localhost:5000/deleteUser/${id}`, {
       method: "DELETE",
     });
+
     fetchUsers();
   };
 
@@ -89,6 +137,7 @@ function AdminDashboard() {
     await fetch(`http://localhost:5000/deleteAlumni/${id}`, {
       method: "DELETE",
     });
+
     fetchAlumni();
   };
 
@@ -96,14 +145,16 @@ function AdminDashboard() {
     await fetch(`http://localhost:5000/deleteEvent/${id}`, {
       method: "DELETE",
     });
+
     fetchEvents();
   };
 
-  /* VIEW STUDENTS */
+  /* ================= VIEW STUDENTS ================= */
   const viewStudents = async (id) => {
     const res = await fetch(
       `http://localhost:5000/getEventStudents/${id}`
     );
+
     const data = await res.json();
 
     if (data.status === "ok") {
@@ -112,13 +163,106 @@ function AdminDashboard() {
     }
   };
 
-  /* EDIT */
+  /* ================= ROADMAP ================= */
+  const handleRoadmapChange = (e) => {
+  const { name, value } = e.target;
+
+  if (
+    name === "skills" ||
+    name === "tools" ||
+    name === "projects" ||
+    name === "resources"
+  ) {
+    setRoadmapData({
+      ...roadmapData,
+      [name]: value.split(","),
+    });
+  } else {
+    setRoadmapData({
+      ...roadmapData,
+      [name]: value,
+    });
+  }
+};
+
+  const addRoadmap = async (e) => {
+  e.preventDefault();
+
+  try {
+    const res = await fetch(
+      "http://localhost:5000/addRoadmap",
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({
+          role: roadmapData.role,
+          category: roadmapData.category,
+          icon: roadmapData.icon,
+          company: roadmapData.company,
+          location: roadmapData.location,
+          year: roadmapData.year,
+
+          description: roadmapData.description,
+          duration: roadmapData.duration,
+          salary: roadmapData.salary,
+          difficulty: roadmapData.difficulty,
+
+          skills: roadmapData.skills,
+          tools: roadmapData.tools,
+          projects: roadmapData.projects,
+          resources: roadmapData.resources,
+
+          steps: roadmapData.steps,
+        }),
+      }
+    );
+
+    const data = await res.json();
+
+    if (data.status === "ok") {
+      alert("Roadmap Added Successfully");
+
+      setRoadmapData({
+        role: "",
+        category: "",
+        icon: "",
+        company: "",
+        location: "",
+        year: "",
+
+        description: "",
+        duration: "",
+        salary: "",
+        difficulty: "",
+
+        skills: [],
+        tools: [],
+        resources: [],
+        projects: [],
+
+        steps: ["", "", ""],
+      });
+    } else {
+      alert("Failed");
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+  /* ================= EDIT ================= */
   const handleEdit = (data, type) => {
     setShowModal(true);
     setIsEdit(true);
     setEditId(data._id);
 
-    if (type === "user") setUserForm(data);
+    if (type === "user") {
+      setUserForm(data);
+    }
 
     if (type === "alumni") {
       setAlumniForm({
@@ -127,14 +271,20 @@ function AdminDashboard() {
       });
     }
 
-    if (type === "event") setEventForm(data);
+    if (type === "event") {
+      setEventForm(data);
+    }
   };
 
-  /* UPDATE USER */
+  /* ================= UPDATE USER ================= */
   const updateUser = async () => {
     await fetch(`http://localhost:5000/updateUser/${editId}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+
+      headers: {
+        "Content-Type": "application/json",
+      },
+
       body: JSON.stringify(userForm),
     });
 
@@ -142,7 +292,7 @@ function AdminDashboard() {
     setShowModal(false);
   };
 
-  /* SAVE ALUMNI */
+  /* ================= SAVE ALUMNI ================= */
   const saveAlumni = async (e) => {
     e.preventDefault();
 
@@ -170,8 +320,27 @@ function AdminDashboard() {
     fetchAlumni();
     setShowModal(false);
   };
+  /* ================= DELETE ROADMAP ================= */
 
-  /* SAVE EVENT */
+const deleteRoadmap = async (id) => {
+  try {
+    await fetch(
+      `http://localhost:5000/deleteRoadmap/${id}`,
+      {
+        method: "DELETE",
+      }
+    );
+
+    alert("Roadmap Deleted");
+
+    fetchRoadmaps(); // refresh roadmap list
+
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+  /* ================= SAVE EVENT ================= */
   const saveEvent = async () => {
     const url = isEdit
       ? `http://localhost:5000/updateEvent/${editId}`
@@ -179,7 +348,11 @@ function AdminDashboard() {
 
     await fetch(url, {
       method: isEdit ? "PUT" : "POST",
-      headers: { "Content-Type": "application/json" },
+
+      headers: {
+        "Content-Type": "application/json",
+      },
+
       body: JSON.stringify(eventForm),
     });
 
@@ -187,38 +360,63 @@ function AdminDashboard() {
     setShowModal(false);
   };
 
+  /* ================= LOGOUT ================= */
   const handleLogout = () => {
     localStorage.removeItem("userType");
     navigate("/login");
   };
 
+  /* ================= FILTER USERS ================= */
   const filteredUsers = users.filter((u) => {
     const matchSearch =
       u.name.toLowerCase().includes(search.toLowerCase()) ||
       u.email.toLowerCase().includes(search.toLowerCase());
 
     const matchFilter =
-      filter === "All" ? true : u.userType === filter;
+      filter === "All"
+        ? true
+        : u.userType === filter;
 
     return matchSearch && matchFilter;
   });
 
   return (
     <div className="admin-layout">
+
+      {/* SIDEBAR */}
       <div className="sidebar">
+
         <h2>Admin Panel</h2>
 
         <ul>
-          <li onClick={() => setActiveTab("users")}>Users</li>
-          <li onClick={() => setActiveTab("alumni")}>Alumni</li>
-          <li onClick={() => setActiveTab("events")}>Events</li>
-          <li onClick={handleLogout} style={{ color: "red" }}>
+          <li onClick={() => setActiveTab("users")}>
+            Users
+          </li>
+
+          <li onClick={() => setActiveTab("alumni")}>
+            Alumni
+          </li>
+
+          <li onClick={() => setActiveTab("events")}>
+            Events
+          </li>
+
+          <li onClick={() => setActiveTab("roadmaps")}>
+            Roadmaps
+          </li>
+
+          <li
+            onClick={handleLogout}
+            style={{ color: "red" }}
+          >
             Logout
           </li>
         </ul>
       </div>
 
+      {/* MAIN CONTENT */}
       <div className="main-content">
+
         <h1>{activeTab.toUpperCase()}</h1>
 
         {/* USERS */}
@@ -228,12 +426,16 @@ function AdminDashboard() {
               type="text"
               placeholder="Search..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) =>
+                setSearch(e.target.value)
+              }
             />
 
             <select
               value={filter}
-              onChange={(e) => setFilter(e.target.value)}
+              onChange={(e) =>
+                setFilter(e.target.value)
+              }
             >
               <option value="All">All</option>
               <option value="Admin">Admin</option>
@@ -241,6 +443,7 @@ function AdminDashboard() {
             </select>
 
             <table className="admin-table">
+
               <thead>
                 <tr>
                   <th>Name</th>
@@ -258,17 +461,28 @@ function AdminDashboard() {
                     <td>{u.email}</td>
                     <td>{u.phone}</td>
                     <td>{u.userType}</td>
+
                     <td>
-                      <button onClick={() => handleEdit(u, "user")}>
+                      <button
+                        onClick={() =>
+                          handleEdit(u, "user")
+                        }
+                      >
                         Edit
                       </button>
-                      <button onClick={() => deleteUser(u._id)}>
+
+                      <button
+                        onClick={() =>
+                          deleteUser(u._id)
+                        }
+                      >
                         Delete
                       </button>
                     </td>
                   </tr>
                 ))}
               </tbody>
+
             </table>
           </>
         )}
@@ -287,6 +501,7 @@ function AdminDashboard() {
             </button>
 
             <table className="admin-table">
+
               <thead>
                 <tr>
                   <th>Photo</th>
@@ -302,6 +517,7 @@ function AdminDashboard() {
               <tbody>
                 {alumni.map((a) => (
                   <tr key={a._id}>
+
                     <td>
                       <img
                         src={`http://localhost:5000/uploads/${a.photo}`}
@@ -309,22 +525,35 @@ function AdminDashboard() {
                         alt=""
                       />
                     </td>
+
                     <td>{a.name}</td>
                     <td>{a.email}</td>
                     <td>{a.company}</td>
                     <td>{a.position}</td>
                     <td>{a.year}</td>
+
                     <td>
-                      <button onClick={() => handleEdit(a, "alumni")}>
+                      <button
+                        onClick={() =>
+                          handleEdit(a, "alumni")
+                        }
+                      >
                         Edit
                       </button>
-                      <button onClick={() => deleteAlumni(a._id)}>
+
+                      <button
+                        onClick={() =>
+                          deleteAlumni(a._id)
+                        }
+                      >
                         Delete
                       </button>
                     </td>
+
                   </tr>
                 ))}
               </tbody>
+
             </table>
           </>
         )}
@@ -336,7 +565,9 @@ function AdminDashboard() {
               className="add-btn"
               onClick={() => {
                 setShowModal(true);
+
                 setIsEdit(false);
+
                 setEventForm({
                   title: "",
                   date: "",
@@ -349,6 +580,7 @@ function AdminDashboard() {
             </button>
 
             <table className="admin-table">
+
               <thead>
                 <tr>
                   <th>Title</th>
@@ -366,32 +598,282 @@ function AdminDashboard() {
                     <td>{e.date}</td>
                     <td>{e.time}</td>
                     <td>{e.mode}</td>
+
                     <td>
-                      <button onClick={() => handleEdit(e, "event")}>
+                      <button
+                        onClick={() =>
+                          handleEdit(e, "event")
+                        }
+                      >
                         Edit
                       </button>
-                      <button onClick={() => deleteEvent(e._id)}>
+
+                      <button
+                        onClick={() =>
+                          deleteEvent(e._id)
+                        }
+                      >
                         Delete
                       </button>
-                      <button onClick={() => viewStudents(e._id)}>
+
+                      <button
+                        onClick={() =>
+                          viewStudents(e._id)
+                        }
+                      >
                         Students
                       </button>
                     </td>
                   </tr>
                 ))}
               </tbody>
+
             </table>
           </>
         )}
+
+        {/* ROADMAPS */}
+        {activeTab === "roadmaps" && (
+          <div className="admin-roadmap">
+
+            <h2>Add Roadmap</h2>
+
+            <form onSubmit={addRoadmap}>
+
+              <input
+                type="text"
+                name="role"
+                placeholder="Role"
+                value={roadmapData.role}
+                onChange={handleRoadmapChange}
+              />
+
+              <input
+                type="text"
+                name="category"
+                placeholder="Category"
+                value={roadmapData.category}
+                onChange={handleRoadmapChange}
+              />
+
+              <input
+                type="text"
+                name="icon"
+                placeholder="Icon URL"
+                value={roadmapData.icon}
+                onChange={handleRoadmapChange}
+              />
+
+              <input
+                type="text"
+                name="company"
+                placeholder="Company"
+                value={roadmapData.company}
+                onChange={handleRoadmapChange}
+              />
+
+              <input
+                type="text"
+                name="location"
+                placeholder="Location"
+                value={roadmapData.location}
+                onChange={handleRoadmapChange}
+              />
+
+              <input
+                type="text"
+                name="year"
+                placeholder="Year"
+                value={roadmapData.year}
+                onChange={handleRoadmapChange}
+              />
+
+             <input
+                type="text"
+                placeholder="Step 1"
+                value={roadmapData.steps[0]}
+                onChange={(e) => {
+                  const newSteps = [...roadmapData.steps];
+                  newSteps[0] = e.target.value;
+
+                  setRoadmapData({
+                    ...roadmapData,
+                    steps: newSteps,
+                  });
+                }}
+              />
+
+              
+
+              <input
+                type="text"
+                placeholder="Step 2"
+                value={roadmapData.steps[1]}
+                onChange={(e) => {
+                  const newSteps = [...roadmapData.steps];
+                  newSteps[1] = e.target.value;
+
+                  setRoadmapData({
+                    ...roadmapData,
+                    steps: newSteps,
+                  });
+                }}
+              />
+              <input
+                    type="text"
+                    name="description"
+                    placeholder="Description"
+                    value={roadmapData.description}
+                    onChange={handleRoadmapChange}
+                  />
+
+                  <input
+                    type="text"
+                    name="duration"
+                    placeholder="Duration"
+                    value={roadmapData.duration}
+                    onChange={handleRoadmapChange}
+                  />
+
+                  <input
+                    type="text"
+                    name="salary"
+                    placeholder="Salary"
+                    value={roadmapData.salary}
+                    onChange={handleRoadmapChange}
+                  />
+
+                  <input
+                    type="text"
+                    name="difficulty"
+                    placeholder="Difficulty"
+                    value={roadmapData.difficulty}
+                    onChange={handleRoadmapChange}
+                  />
+
+                  <input
+                    type="text"
+                    name="skills"
+                    placeholder="Skills (comma separated)"
+                    onChange={handleRoadmapChange}
+                  />
+
+                  <input
+                    type="text"
+                    name="tools"
+                    placeholder="Tools (comma separated)"
+                    onChange={handleRoadmapChange}
+                  />
+
+                  <input
+                    type="text"
+                    name="projects"
+                    placeholder="Projects (comma separated)"
+                    onChange={handleRoadmapChange}
+                  />
+
+                  <input
+                    type="text"
+                    name="resources"
+                    placeholder="Resources (comma separated)"
+                    onChange={handleRoadmapChange}
+                  />
+
+              <button type="submit">
+                Add Roadmap
+              </button>
+
+
+            </form>
+          </div>
+        )}
+        
       </div>
+      
+
+
+  {activeTab === "roadmaps" && (
+  <div className="admin-roadmap">
+
+    
+
+    <form onSubmit={addRoadmap}>
+
+      {/* ALL INPUTS */}
+
+    </form>
+
+    {/* ADD TABLE HERE */}
+
+    <h2 className="roadmap-list-title">
+      All Roadmaps
+    </h2>
+
+    <table className="admin-table roadmap-table">
+
+      <thead>
+        <tr>
+          <th>Icon</th>
+          <th>Role</th>
+          <th>Company</th>
+          <th>Category</th>
+          <th>Location</th>
+          <th>Year</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        {roadmaps.map((r) => (
+          <tr key={r._id}>
+
+            <td>
+              <img
+                src={r.icon}
+                alt=""
+                className="roadmap-table-img"
+              />
+            </td>
+
+            <td>{r.role}</td>
+            <td>{r.company}</td>
+            <td>{r.category}</td>
+            <td>{r.location}</td>
+            <td>{r.year}</td>
+
+            <td>
+              <button
+                className="delete-roadmap-btn"
+                onClick={() =>
+                  deleteRoadmap(r._id)
+                }
+              >
+                Delete
+              </button>
+            </td>
+
+          </tr>
+        ))}
+
+      </tbody>
+
+    </table>
+
+  </div>
+)}
+
 
       {/* STUDENTS MODAL */}
       {showStudents && (
         <div className="modal-overlay">
+
           <div className="modal">
+
             <h2>Registered Students</h2>
 
             <table className="admin-table">
+
               <thead>
                 <tr>
                   <th>Name</th>
@@ -409,11 +891,17 @@ function AdminDashboard() {
                   </tr>
                 ))}
               </tbody>
+
             </table>
 
-            <button onClick={() => setShowStudents(false)}>
+            <button
+              onClick={() =>
+                setShowStudents(false)
+              }
+            >
               Close
             </button>
+
           </div>
         </div>
       )}
@@ -421,10 +909,14 @@ function AdminDashboard() {
       {/* FORM MODAL */}
       {showModal && (
         <div className="modal-overlay">
+
           <div className="modal">
+
+            {/* USER */}
             {activeTab === "users" && (
               <>
                 <h2>Edit User</h2>
+
                 <input
                   value={userForm.name}
                   onChange={(e) =>
@@ -434,13 +926,22 @@ function AdminDashboard() {
                     })
                   }
                 />
-                <button onClick={updateUser}>Save</button>
+
+                <button onClick={updateUser}>
+                  Save
+                </button>
               </>
             )}
 
+            {/* ALUMNI */}
             {activeTab === "alumni" && (
               <form onSubmit={saveAlumni}>
-                <h2>{isEdit ? "Edit Alumni" : "Add Alumni"}</h2>
+
+                <h2>
+                  {isEdit
+                    ? "Edit Alumni"
+                    : "Add Alumni"}
+                </h2>
 
                 <input
                   placeholder="Name"
@@ -507,13 +1008,21 @@ function AdminDashboard() {
                   }
                 />
 
-                <button type="submit">Save</button>
+                <button type="submit">
+                  Save
+                </button>
+
               </form>
             )}
 
+            {/* EVENTS */}
             {activeTab === "events" && (
               <>
-                <h2>{isEdit ? "Edit Event" : "Add Event"}</h2>
+                <h2>
+                  {isEdit
+                    ? "Edit Event"
+                    : "Add Event"}
+                </h2>
 
                 <input
                   placeholder="Title"
@@ -557,18 +1066,33 @@ function AdminDashboard() {
                     })
                   }
                 >
-                  <option value="">Select Mode</option>
-                  <option value="Online">Online</option>
-                  <option value="Offline">Offline</option>
+                  <option value="">
+                    Select Mode
+                  </option>
+
+                  <option value="Online">
+                    Online
+                  </option>
+
+                  <option value="Offline">
+                    Offline
+                  </option>
                 </select>
 
-                <button onClick={saveEvent}>Save</button>
+                <button onClick={saveEvent}>
+                  Save
+                </button>
               </>
             )}
 
-            <button onClick={() => setShowModal(false)}>
+            <button
+              onClick={() =>
+                setShowModal(false)
+              }
+            >
               Cancel
             </button>
+
           </div>
         </div>
       )}

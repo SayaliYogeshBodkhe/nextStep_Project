@@ -5,6 +5,7 @@ const cors = require("cors");
 const session = require("express-session");
 const passport = require("passport");
 
+
 require("./auth/google");
 
 const connectDB = require("./config/db");
@@ -14,6 +15,7 @@ const alumniRoutes = require("./routes/alumniRoutes");
 const eventRoutes = require("./routes/eventRoutes");
 const registrationRoutes = require("./routes/registrationRoutes");
 const mailRoutes = require("./routes/mailRoutes");
+const roadmapRoutes = require("./routes/roadmapRoutes");
 
 const app = express();
 
@@ -61,6 +63,7 @@ app.use(eventRoutes);
 app.use(registrationRoutes);
 
 app.use(mailRoutes);
+app.use("/", roadmapRoutes);
 
 /* SERVER */
 const PORT =
