@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useEffect } from "react";
 
 import Home from "./pages/Home";
@@ -14,57 +14,151 @@ import Login from "./pages/Login";
 import SingleProfile from "./pages/SingleProfile";
 import Signup from "./pages/Signup";
 import AdminDashboard from "./pages/AdminDashboard";
-
 import RoadmapDetails from "./pages/RoadmapDetails";
 
-// ✅ Admin Protected Route
-const AdminRoute = ({ children }) => {
-  const userType = localStorage.getItem("userType");
-
-  if (!userType) return <Navigate to="/login" />;
-  if (userType !== "Admin") return <Navigate to="/" />;
-
-  return children;
-};
+/* PROTECTED ROUTES */
+import ProtectedRoute from "./components/ProtectedRoute";
+import AdminRoute from "./components/AdminRoute";
 
 function App() {
+
   useEffect(() => {
+
     fetch("http://localhost:5000/current-user", {
       credentials: "include",
     })
       .then((res) => res.json())
       .then((user) => {
-        if (user) {
-          const role = user.userType || "User";
-          localStorage.setItem("userType", role);
 
-          if (role === "Admin") {
-            window.location.href = "/admin-dashboard";
-          }
+        if (user && user.userType) {
+
+          localStorage.setItem(
+            "userType",
+            user.userType
+          );
+
         }
+
       })
       .catch((err) => console.log(err));
+
   }, []);
 
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/events" element={<Events />} />
-        <Route path="/roadmap" element={<Roadmap />} />
-        <Route path="/resources" element={<Resources />} />
-        <Route path="/alumni" element={<Alumni />} />
-        <Route path="/alumni-profile" element={<AlumniProfile />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/edit-profile" element={<EditProfile />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/single-profile" element={<SingleProfile />} />
-        
 
-        {/* Admin Protected Route */}
+    <BrowserRouter>
+
+      <Routes>
+
+        {/* ================= PUBLIC ROUTES ================= */}
+
+        <Route path="/login" element={<Login />} />
+
+        <Route path="/signup" element={<Signup />} />
+
+        {/* ================= PROTECTED USER ROUTES ================= */}
+
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Home />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/about"
+          element={
+            <ProtectedRoute>
+              <About />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/events"
+          element={
+            <ProtectedRoute>
+              <Events />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/roadmap"
+          element={
+            <ProtectedRoute>
+              <Roadmap />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/roadmap/:id"
+          element={
+            <ProtectedRoute>
+              <RoadmapDetails />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/resources"
+          element={
+            <ProtectedRoute>
+              <Resources />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/alumni"
+          element={
+            <ProtectedRoute>
+              <Alumni />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/alumni-profile"
+          element={
+            <ProtectedRoute>
+              <AlumniProfile />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/edit-profile"
+          element={
+            <ProtectedRoute>
+              <EditProfile />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/single-profile"
+          element={
+            <ProtectedRoute>
+              <SingleProfile />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* ================= ADMIN ROUTE ================= */}
+
         <Route
           path="/admin-dashboard"
           element={
@@ -73,8 +167,9 @@ function App() {
             </AdminRoute>
           }
         />
-        <Route path="/roadmap/:id" element={<RoadmapDetails />} />
+
       </Routes>
+
     </BrowserRouter>
   );
 }

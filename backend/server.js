@@ -16,6 +16,9 @@ const eventRoutes = require("./routes/eventRoutes");
 const registrationRoutes = require("./routes/registrationRoutes");
 const mailRoutes = require("./routes/mailRoutes");
 const roadmapRoutes = require("./routes/roadmapRoutes");
+const resourceRoutes = require(
+  "./routes/resourceRoutes"
+);
 
 const app = express();
 
@@ -64,6 +67,7 @@ app.use(registrationRoutes);
 
 app.use(mailRoutes);
 app.use("/", roadmapRoutes);
+app.use("/", resourceRoutes);
 
 /* SERVER */
 const PORT =

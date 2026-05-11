@@ -1,6 +1,7 @@
 const Registration = require("../models/registration");
+const Event = require("../models/event");
 
-const transporter = require("./mailController");
+const { transporter } = require("./mailController");
 
 /* REGISTER EVENT */
 exports.registerEvent =

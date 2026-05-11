@@ -291,7 +291,128 @@ const fetchRoadmaps = async () => {
     fetchUsers();
     setShowModal(false);
   };
+  /* ================= RESOURCE STATES ================= */
 
+const [resources, setResources] = useState([]);
+
+const [resourceData, setResourceData] = useState({
+  title: "",
+  category: "",
+  type: "",
+  thumbnail: "",
+  link: "",
+  description: "",
+});
+
+/* ================= FETCH RESOURCES ================= */
+
+const fetchResources = async () => {
+  try {
+    const res = await fetch(
+      "http://localhost:5000/getResources"
+    );
+
+    const data = await res.json();
+
+    if (data.status === "ok") {
+      setResources(data.data);
+    }
+
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+/* ================= USE EFFECT ================= */
+
+useEffect(() => {
+  fetchUsers();
+  fetchAlumni();
+  fetchEvents();
+  fetchResources();
+
+}, []);
+
+/* ================= HANDLE RESOURCE CHANGE ================= */
+
+const handleResourceChange = (e) => {
+
+  const { name, value } = e.target;
+
+  setResourceData({
+    ...resourceData,
+    [name]: value,
+  });
+};
+
+/* ================= ADD RESOURCE ================= */
+
+const addResource = async (e) => {
+
+  e.preventDefault();
+
+  try {
+
+    const res = await fetch(
+      "http://localhost:5000/addResource",
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify(resourceData),
+      }
+    );
+
+    const data = await res.json();
+
+    if (data.status === "ok") {
+
+      alert("Resource Added");
+
+      fetchResources();
+
+      setResourceData({
+        title: "",
+        category: "",
+        type: "",
+        thumbnail: "",
+        link: "",
+        description: "",
+      });
+
+    } else {
+      alert("Failed");
+    }
+
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+/* ================= DELETE RESOURCE ================= */
+
+const deleteResource = async (id) => {
+
+  try {
+
+    await fetch(
+      `http://localhost:5000/deleteResource/${id}`,
+      {
+        method: "DELETE",
+      }
+    );
+
+    alert("Resource Deleted");
+
+    fetchResources();
+
+  } catch (err) {
+    console.log(err);
+  }
+};
   /* ================= SAVE ALUMNI ================= */
   const saveAlumni = async (e) => {
     e.preventDefault();
@@ -404,6 +525,9 @@ const deleteRoadmap = async (id) => {
           <li onClick={() => setActiveTab("roadmaps")}>
             Roadmaps
           </li>
+          <li onClick={() => setActiveTab("resources")}>
+            Resources
+          </li>
 
           <li
             onClick={handleLogout}
@@ -417,8 +541,7 @@ const deleteRoadmap = async (id) => {
       {/* MAIN CONTENT */}
       <div className="main-content">
 
-        <h1>{activeTab.toUpperCase()}</h1>
-
+        
         {/* USERS */}
         {activeTab === "users" && (
           <>
@@ -860,6 +983,189 @@ const deleteRoadmap = async (id) => {
 
     </table>
 
+  </div>
+)}
+    {/* ================= RESOURCES ADMIN SECTION ================= */}
+
+{/* ================= RESOURCES ================= */}
+
+{activeTab === "resources" && (
+  <div className="resources-admin-container">
+
+    {/* ================= FORM ================= */}
+
+    <div className="resource-form-card">
+
+      <h2>Add New Resource</h2>
+
+      <form onSubmit={addResource}>
+
+        <div className="resource-grid">
+
+          <input
+            type="text"
+            placeholder="Resource Title"
+            value={resourceData.title}
+            onChange={(e) =>
+              setResourceData({
+                ...resourceData,
+                title: e.target.value,
+              })
+            }
+          />
+
+          <input
+            type="text"
+            placeholder="Category"
+            value={resourceData.category}
+            onChange={(e) =>
+              setResourceData({
+                ...resourceData,
+                category: e.target.value,
+              })
+            }
+          />
+
+          <select
+            value={resourceData.type}
+            onChange={(e) =>
+              setResourceData({
+                ...resourceData,
+                type: e.target.value,
+              })
+            }
+          >
+            <option value="">
+              Select Type
+            </option>
+
+            <option value="PDF">
+              PDF
+            </option>
+
+            <option value="Video">
+              Video
+            </option>
+
+            <option value="Website">
+              Website
+            </option>
+          </select>
+
+          <input
+            type="text"
+            placeholder="Thumbnail URL"
+            value={resourceData.thumbnail}
+            onChange={(e) =>
+              setResourceData({
+                ...resourceData,
+                thumbnail: e.target.value,
+              })
+            }
+          />
+
+          <input
+            type="text"
+            placeholder="Resource Link"
+            value={resourceData.link}
+            onChange={(e) =>
+              setResourceData({
+                ...resourceData,
+                link: e.target.value,
+              })
+            }
+          />
+
+          <textarea
+            placeholder="Description"
+            value={resourceData.description}
+            onChange={(e) =>
+              setResourceData({
+                ...resourceData,
+                description: e.target.value,
+              })
+            }
+          ></textarea>
+
+        </div>
+
+        <button
+          type="submit"
+          className="resource-submit-btn"
+        >
+          Add Resource
+        </button>
+
+      </form>
+    </div>
+
+    {/* ================= TABLE ================= */}
+
+    <div className="resource-table-card">
+
+      <h2>All Resources</h2>
+
+      <table className="resource-table">
+
+        <thead>
+          <tr>
+            <th>Image</th>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Type</th>
+            <th>Link</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          {resources.map((r) => (
+            <tr key={r._id}>
+
+              <td>
+                <img
+                  src={r.thumbnail}
+                  alt=""
+                  className="resource-thumb"
+                />
+              </td>
+
+              <td>{r.title}</td>
+
+              <td>{r.category}</td>
+
+              <td>{r.type}</td>
+
+              <td>
+                <a
+                  href={r.link}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="resource-link"
+                >
+                  Open
+                </a>
+              </td>
+
+              <td>
+                <button
+                  className="delete-resource-btn"
+                  onClick={() =>
+                    deleteResource(r._id)
+                  }
+                >
+                  Delete
+                </button>
+              </td>
+
+            </tr>
+          ))}
+
+        </tbody>
+
+      </table>
+    </div>
   </div>
 )}
 
