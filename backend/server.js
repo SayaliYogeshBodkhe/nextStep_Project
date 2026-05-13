@@ -7,6 +7,8 @@ const passport = require("passport");
 
 
 require("./auth/google");
+require("./cron/deleteExpiredEvents");
+require("./cron/sendEventReminder");
 
 const connectDB = require("./config/db");
 

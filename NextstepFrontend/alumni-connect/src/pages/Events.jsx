@@ -5,6 +5,10 @@ import "./events.css";
 function Events() {
   const [events, setEvents] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
+  const [currentPage, setCurrentPage] =
+  useState(1);
+
+const itemsPerPage = 6;
 
   const [selectedEvent, setSelectedEvent] = useState("");
   const [selectedEventId, setSelectedEventId] = useState("");
@@ -35,6 +39,21 @@ function Events() {
   useEffect(() => {
     fetchEvents();
   }, []);
+  const lastIndex =
+  currentPage * itemsPerPage;
+
+const firstIndex =
+  lastIndex - itemsPerPage;
+
+const currentItems =
+  events.slice(
+    firstIndex,
+    lastIndex
+  );
+
+const totalPages = Math.ceil(
+  events.length / itemsPerPage
+);
 
   /* ================= OPEN POPUP ================= */
   const openPopup = (event) => {
@@ -119,7 +138,7 @@ function Events() {
       {/* EVENTS */}
       <div className="events-container">
         {events.length > 0 ? (
-          events.map((event) => (
+          currentItems.map((event) => (
             <div
               className="event-card"
               key={event._id}
@@ -166,6 +185,47 @@ function Events() {
           </h2>
         )}
       </div>
+      <div className="pagination">
+
+  <button
+    disabled={currentPage === 1}
+    onClick={() =>
+      setCurrentPage(currentPage - 1)
+    }
+  >
+    Prev
+  </button>
+
+  {[...Array(totalPages)].map(
+    (_, index) => (
+      <button
+        key={index}
+        className={
+          currentPage === index + 1
+            ? "active-page"
+            : ""
+        }
+        onClick={() =>
+          setCurrentPage(index + 1)
+        }
+      >
+        {index + 1}
+      </button>
+    )
+  )}
+
+  <button
+    disabled={
+      currentPage === totalPages
+    }
+    onClick={() =>
+      setCurrentPage(currentPage + 1)
+    }
+  >
+    Next
+  </button>
+
+</div>
 
       {/* POPUP */}
       {showPopup && (
@@ -243,7 +303,9 @@ function Events() {
           </div>
         </div>
       )}
+      
     </>
+    
   );
 }
 

@@ -7,6 +7,10 @@ function Roadmap() {
   const [roadmaps, setRoadmaps] = useState([]);
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
+  const [currentPage, setCurrentPage] =
+  useState(1);
+
+const itemsPerPage = 6;
   const navigate = useNavigate();
 
   /* ================= FETCH ROADMAPS ================= */
@@ -38,6 +42,21 @@ function Roadmap() {
 
     return matchSearch && matchCategory;
   });
+  const lastIndex =
+  currentPage * itemsPerPage;
+
+const firstIndex =
+  lastIndex - itemsPerPage;
+
+const currentItems =
+  filtered.slice(
+    firstIndex,
+    lastIndex
+  );
+
+const totalPages = Math.ceil(
+  filtered.length / itemsPerPage
+);
 
   /* ================= UNIQUE CATEGORIES ================= */
   const categories = [
@@ -80,7 +99,7 @@ function Roadmap() {
 
       {/* ROADMAP GRID */}
       <div className="roadmap-grid">
-        {filtered.map((item) => (
+        {currentItems.map((item) => (
           <div className="roadmap-card" key={item._id}>
 
             {/* HEADER */}
@@ -119,6 +138,47 @@ function Roadmap() {
           </div>
         ))}
       </div>
+      <div className="pagination">
+
+  <button
+    disabled={currentPage === 1}
+    onClick={() =>
+      setCurrentPage(currentPage - 1)
+    }
+  >
+    Prev
+  </button>
+
+  {[...Array(totalPages)].map(
+    (_, index) => (
+      <button
+        key={index}
+        className={
+          currentPage === index + 1
+            ? "active-page"
+            : ""
+        }
+        onClick={() =>
+          setCurrentPage(index + 1)
+        }
+      >
+        {index + 1}
+      </button>
+    )
+  )}
+
+  <button
+    disabled={
+      currentPage === totalPages
+    }
+    onClick={() =>
+      setCurrentPage(currentPage + 1)
+    }
+  >
+    Next
+  </button>
+
+</div>
     </>
   );
 }
