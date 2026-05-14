@@ -1,4 +1,6 @@
 const Event = require("../models/event");
+const Notification =
+  require("../models/notification");
 
 /* GET EVENTS */
 exports.getEvents = async (

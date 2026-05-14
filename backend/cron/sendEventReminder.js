@@ -58,6 +58,7 @@ cron.schedule("0 8 * * *", async () => {
     console.log(
       "Reminder mails sent"
     );
+    
 
   } catch (err) {
     console.log(err);

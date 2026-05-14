@@ -13,6 +13,10 @@ require("./cron/sendEventReminder");
 const connectDB = require("./config/db");
 
 const authRoutes = require("./routes/authRoutes");
+const notificationRoutes =
+  require(
+    "./routes/notificationRoutes"
+  );
 const alumniRoutes = require("./routes/alumniRoutes");
 const eventRoutes = require("./routes/eventRoutes");
 const registrationRoutes = require("./routes/registrationRoutes");
@@ -48,6 +52,7 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(notificationRoutes);
 
 /* STATIC */
 app.use(

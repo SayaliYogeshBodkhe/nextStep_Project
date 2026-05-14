@@ -12,6 +12,7 @@ cron.schedule("0 0 * * *", async () => {
     });
 
     console.log("Expired events deleted");
+   
   } catch (err) {
     console.log(err);
   }

@@ -463,11 +463,14 @@ const deleteRoadmap = async (id) => {
 
   /* ================= SAVE EVENT ================= */
   const saveEvent = async () => {
-    const url = isEdit
-      ? `http://localhost:5000/updateEvent/${editId}`
-      : "http://localhost:5000/addEvent";
 
-    await fetch(url, {
+  const url = isEdit
+    ? `http://localhost:5000/updateEvent/${editId}`
+    : "http://localhost:5000/addEvent";
+
+  try {
+
+    const res = await fetch(url, {
       method: isEdit ? "PUT" : "POST",
 
       headers: {
@@ -477,9 +480,66 @@ const deleteRoadmap = async (id) => {
       body: JSON.stringify(eventForm),
     });
 
-    fetchEvents();
-    setShowModal(false);
-  };
+    const data = await res.json();
+
+    if (data.status === "ok") {
+
+      /* CREATE NOTIFICATION ONLY WHEN NEW EVENT ADDED */
+
+      if (!isEdit) {
+
+        await fetch(
+          "http://localhost:5000/addNotification",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+
+            body: JSON.stringify({
+              title:
+                "New Event Added 🚀",
+
+              message:
+                `${eventForm.title} on ${eventForm.date} at ${eventForm.time}`,
+
+              type: "event",
+            }),
+          }
+        );
+      }
+
+      alert(
+        isEdit
+          ? "Event Updated"
+          : "Event Added"
+      );
+
+      fetchEvents();
+
+      setShowModal(false);
+
+      setEventForm({
+        title: "",
+        date: "",
+        time: "",
+        mode: "",
+      });
+
+    } else {
+
+      alert("Failed");
+    }
+
+  } catch (err) {
+
+    console.log(err);
+
+    alert("Server Error");
+  }
+};
 
   /* ================= LOGOUT ================= */
   const handleLogout = () => {
