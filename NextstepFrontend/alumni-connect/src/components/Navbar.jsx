@@ -42,9 +42,7 @@ function Navbar() {
       try {
 
         const res =
-          await fetch(
-            "http://localhost:5000/getNotifications"
-          );
+         await fetch("https://nextstep-project-1.onrender.com/getNotifications");
 
         const data =
           await res.json();

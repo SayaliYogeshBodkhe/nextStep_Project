@@ -24,9 +24,9 @@ function App() {
 
   useEffect(() => {
 
-    fetch("http://localhost:5000/current-user", {
-      credentials: "include",
-    })
+    fetch("https://nextstep-project-1.onrender.com/current-user", {
+  credentials: "include",
+})
       .then((res) => res.json())
       .then((user) => {
 

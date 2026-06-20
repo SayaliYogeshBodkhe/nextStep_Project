@@ -44,7 +44,7 @@ function Signup() {
 
     try {
       const res = await fetch(
-        "http://localhost:5000/sendOtp",
+        "https://nextstep-project-1.onrender.com/sendOtp",
         {
           method: "POST",
           headers: {
@@ -115,7 +115,7 @@ function Signup() {
       setLoading(true);
 
       const res = await fetch(
-        "http://localhost:5000/verifyOtpSignup",
+        "https://nextstep-project-1.onrender.com/verifyOtpSignup",
         {
           method: "POST",
           headers: {

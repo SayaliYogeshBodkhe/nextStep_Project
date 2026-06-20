@@ -23,7 +23,7 @@ const itemsPerPage = 6;
   const fetchEvents = async () => {
     try {
       const res = await fetch(
-        "http://localhost:5000/getEvents"
+        "https://nextstep-project-1.onrender.com/getEvents"
       );
 
       const data = await res.json();
@@ -77,7 +77,7 @@ const totalPages = Math.ceil(
 
     try {
       const res = await fetch(
-        "http://localhost:5000/registerEvent",
+        "https://nextstep-project-1.onrender.com/registerEvent",
         {
           method: "POST",
           headers: {

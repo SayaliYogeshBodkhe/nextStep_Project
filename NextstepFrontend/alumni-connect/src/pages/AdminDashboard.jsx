@@ -77,7 +77,7 @@ function AdminDashboard() {
 
   /* ================= FETCH ================= */
   const fetchUsers = async () => {
-    const res = await fetch("http://localhost:5000/getUsers");
+    const res = await fetch("https://nextstep-project-1.onrender.com/getUsers");
     const data = await res.json();
 
     if (data.status === "ok") {
@@ -87,8 +87,8 @@ function AdminDashboard() {
 const fetchRoadmaps = async () => {
   try {
     const res = await fetch(
-      "http://localhost:5000/getRoadmaps"
-    );
+  "https://nextstep-project-1.onrender.com/getRoadmaps"
+);
 
     const data = await res.json();
 
@@ -100,7 +100,7 @@ const fetchRoadmaps = async () => {
   }
 };
   const fetchAlumni = async () => {
-    const res = await fetch("http://localhost:5000/getAlumni");
+    const res = await fetch("https://nextstep-project-1.onrender.com/getAlumni");
     const data = await res.json();
 
     if (data.status === "ok") {
@@ -109,7 +109,7 @@ const fetchRoadmaps = async () => {
   };
 
   const fetchEvents = async () => {
-    const res = await fetch("http://localhost:5000/getEvents");
+    const res = await fetch("https://nextstep-project-1.onrender.com/getEvents");
     const data = await res.json();
 
     if (data.status === "ok") {
@@ -126,7 +126,7 @@ const fetchRoadmaps = async () => {
 
   /* ================= DELETE ================= */
   const deleteUser = async (id) => {
-    await fetch(`http://localhost:5000/deleteUser/${id}`, {
+    await fetch(`https://nextstep-project-1.onrender.com/deleteUser/${id}`, {
       method: "DELETE",
     });
 
@@ -134,7 +134,7 @@ const fetchRoadmaps = async () => {
   };
 
   const deleteAlumni = async (id) => {
-    await fetch(`http://localhost:5000/deleteAlumni/${id}`, {
+    await fetch(`https://nextstep-project-1.onrender.com/deleteAlumni/${id}`, {
       method: "DELETE",
     });
 
@@ -142,7 +142,7 @@ const fetchRoadmaps = async () => {
   };
 
   const deleteEvent = async (id) => {
-    await fetch(`http://localhost:5000/deleteEvent/${id}`, {
+    await fetch(`https://nextstep-project-1.onrender.com/deleteEvent/${id}`, {
       method: "DELETE",
     });
 
@@ -152,7 +152,7 @@ const fetchRoadmaps = async () => {
   /* ================= VIEW STUDENTS ================= */
   const viewStudents = async (id) => {
     const res = await fetch(
-      `http://localhost:5000/getEventStudents/${id}`
+      `https://nextstep-project-1.onrender.com/getEventStudents/${id}`
     );
 
     const data = await res.json();
@@ -190,7 +190,7 @@ const fetchRoadmaps = async () => {
 
   try {
     const res = await fetch(
-      "http://localhost:5000/addRoadmap",
+      "https://nextstep-project-1.onrender.com/addRoadmap",
       {
         method: "POST",
 
@@ -278,7 +278,7 @@ const fetchRoadmaps = async () => {
 
   /* ================= UPDATE USER ================= */
   const updateUser = async () => {
-    await fetch(`http://localhost:5000/updateUser/${editId}`, {
+    await fetch(`https://nextstep-project-1.onrender.com/updateUser/${editId}`, {
       method: "PUT",
 
       headers: {
@@ -309,7 +309,7 @@ const [resourceData, setResourceData] = useState({
 const fetchResources = async () => {
   try {
     const res = await fetch(
-      "http://localhost:5000/getResources"
+      "https://nextstep-project-1.onrender.com/getResources"
     );
 
     const data = await res.json();
@@ -354,7 +354,7 @@ const addResource = async (e) => {
   try {
 
     const res = await fetch(
-      "http://localhost:5000/addResource",
+      "https://nextstep-project-1.onrender.com/addResource",
       {
         method: "POST",
 
@@ -399,7 +399,7 @@ const deleteResource = async (id) => {
   try {
 
     await fetch(
-      `http://localhost:5000/deleteResource/${id}`,
+      `https://nextstep-project-1.onrender.com/deleteResource/${id}`,
       {
         method: "DELETE",
       }
@@ -430,8 +430,8 @@ const deleteResource = async (id) => {
     }
 
     const url = isEdit
-      ? `http://localhost:5000/updateAlumni/${editId}`
-      : "http://localhost:5000/addAlumni";
+      ? `https://nextstep-project-1.onrender.com/updateAlumni/${editId}`
+      : "https://nextstep-project-1.onrender.com/addAlumni";
 
     await fetch(url, {
       method: isEdit ? "PUT" : "POST",
@@ -446,7 +446,7 @@ const deleteResource = async (id) => {
 const deleteRoadmap = async (id) => {
   try {
     await fetch(
-      `http://localhost:5000/deleteRoadmap/${id}`,
+      `https://nextstep-project-1.onrender.com/deleteRoadmap/${id}`,
       {
         method: "DELETE",
       }
@@ -465,8 +465,8 @@ const deleteRoadmap = async (id) => {
   const saveEvent = async () => {
 
   const url = isEdit
-    ? `http://localhost:5000/updateEvent/${editId}`
-    : "http://localhost:5000/addEvent";
+    ? `https://nextstep-project-1.onrender.com/updateEvent/${editId}`
+  : "https://nextstep-project-1.onrender.com/addEvent";
 
   try {
 
@@ -489,7 +489,7 @@ const deleteRoadmap = async (id) => {
       if (!isEdit) {
 
         await fetch(
-          "http://localhost:5000/addNotification",
+          "https://nextstep-project-1.onrender.com/addNotification",
           {
             method: "POST",
 
@@ -703,7 +703,7 @@ const deleteRoadmap = async (id) => {
 
                     <td>
                       <img
-                        src={`http://localhost:5000/uploads/${a.photo}`}
+                        src={`https://nextstep-project-1.onrender.com/uploads/${a.photo}`}
                         width="50"
                         alt=""
                       />

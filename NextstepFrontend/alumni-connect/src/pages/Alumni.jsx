@@ -22,7 +22,7 @@ function Alumni() {
   const fetchAlumni = async () => {
     try {
       const res = await fetch(
-        "http://localhost:5000/getAlumni"
+        "https://nextstep-project-1.onrender.com/getAlumni"
       );
 
       const data = await res.json();
@@ -60,7 +60,7 @@ function Alumni() {
 
     try {
       const res = await fetch(
-        "http://localhost:5000/sendConnectionMail",
+        "https://nextstep-project-1.onrender.com/sendConnectionMail",
         {
           method: "POST",
 
@@ -146,7 +146,7 @@ function Alumni() {
               </div>
 
               <img
-                src={`http://localhost:5000/uploads/${item.photo}`}
+                src={`https://nextstep-project-1.onrender.com/uploads/${item.photo}`}
                 alt={item.name}
               />
 
@@ -218,10 +218,8 @@ function Alumni() {
             </button>
 
             <img
-              src={`http://localhost:5000/uploads/${selectedAlumni.photo}`}
-              alt={
-                selectedAlumni.name
-              }
+              src={`https://nextstep-project-1.onrender.com/uploads/${selectedAlumni.photo}`}
+              alt={selectedAlumni.name}
               className="popup-img"
             />
 

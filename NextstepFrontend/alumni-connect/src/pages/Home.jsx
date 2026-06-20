@@ -23,7 +23,7 @@ function Home() {
   const getEvents = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:5000/getEvents"
+        "https://nextstep-project-1.onrender.com/getEvents"
       );
 
       if (res.data.status === "ok") {
@@ -66,7 +66,7 @@ function Home() {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/registerEvent",
+        "https://nextstep-project-1.onrender.com/registerEvent",
         {
           eventId:
             selectedEvent._id,

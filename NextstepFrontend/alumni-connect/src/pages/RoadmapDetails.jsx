@@ -14,7 +14,7 @@ function RoadmapDetail() {
 
   const fetchRoadmap = async () => {
     const res = await fetch(
-      `http://localhost:5000/getRoadmap/${id}`
+      `https://nextstep-project-1.onrender.com/getRoadmap/${id}`
     );
 
     const data = await res.json();
