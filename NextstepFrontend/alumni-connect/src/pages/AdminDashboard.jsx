@@ -16,8 +16,9 @@ function AdminDashboard() {
 
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("All");
-
   const [activeTab, setActiveTab] = useState("users");
+
+  const navigate = useNavigate();
 
   const [userForm, setUserForm] = useState({
     name: "",
@@ -40,11 +41,9 @@ function AdminDashboard() {
     date: "",
     time: "",
     mode: "",
+    zoomLink: "",
   });
 
-  const navigate = useNavigate();
-
-  /* AUTH */
   useEffect(() => {
     const role = localStorage.getItem("userType");
 
@@ -52,7 +51,6 @@ function AdminDashboard() {
     else if (role !== "Admin") navigate("/");
   }, [navigate]);
 
-  /* FETCH */
   const fetchUsers = async () => {
     const res = await fetch("http://localhost:5000/getUsers");
     const data = await res.json();
@@ -68,7 +66,6 @@ function AdminDashboard() {
   const fetchEvents = async () => {
     const res = await fetch("http://localhost:5000/getEvents");
     const data = await res.json();
-  console.log("Users API:", data); // check this
     if (data.status === "ok") setEvents(data.data);
   };
 
@@ -78,7 +75,6 @@ function AdminDashboard() {
     fetchEvents();
   }, []);
 
-  /* DELETE */
   const deleteUser = async (id) => {
     await fetch(`http://localhost:5000/deleteUser/${id}`, {
       method: "DELETE",
@@ -100,7 +96,6 @@ function AdminDashboard() {
     fetchEvents();
   };
 
-  /* VIEW STUDENTS */
   const viewStudents = async (id) => {
     const res = await fetch(
       `http://localhost:5000/getEventStudents/${id}`
@@ -113,7 +108,6 @@ function AdminDashboard() {
     }
   };
 
-  /* EDIT */
   const handleEdit = (data, type) => {
     setShowModal(true);
     setIsEdit(true);
@@ -128,10 +122,17 @@ function AdminDashboard() {
       });
     }
 
-    if (type === "event") setEventForm(data);
+    if (type === "event") {
+      setEventForm({
+        title: data.title || "",
+        date: data.date || "",
+        time: data.time || "",
+        mode: data.mode || "",
+        zoomLink: data.zoomLink || "",
+      });
+    }
   };
 
-  /* UPDATE USER */
   const updateUser = async () => {
     await fetch(`http://localhost:5000/updateUser/${editId}`, {
       method: "PUT",
@@ -143,12 +144,10 @@ function AdminDashboard() {
     setShowModal(false);
   };
 
-  /* SAVE ALUMNI */
   const saveAlumni = async (e) => {
     e.preventDefault();
 
     const formData = new FormData();
-
     formData.append("name", alumniForm.name);
     formData.append("email", alumniForm.email);
     formData.append("company", alumniForm.company);
@@ -172,7 +171,6 @@ function AdminDashboard() {
     setShowModal(false);
   };
 
-  /* SAVE EVENT */
   const saveEvent = async () => {
     const url = isEdit
       ? `http://localhost:5000/updateEvent/${editId}`
@@ -204,11 +202,15 @@ function AdminDashboard() {
     return matchSearch && matchFilter;
   });
 
-  return (
-    <div className="admin-layout">
+  const isMeetingLive = (date, time) => {
+    const eventDateTime = new Date(`${date}T${time}`);
+    const now = new Date();
+    return now >= eventDateTime;
+  };
+
+  return (    <div className="admin-layout">
       <div className="sidebar">
         <h2>Admin Panel</h2>
-
         <ul>
           <li onClick={() => setActiveTab("users")}>Users</li>
           <li onClick={() => setActiveTab("alumni")}>Alumni</li>
@@ -251,7 +253,6 @@ function AdminDashboard() {
                   <th>Action</th>
                 </tr>
               </thead>
-
               <tbody>
                 {filteredUsers.map((u) => (
                   <tr key={u._id}>
@@ -260,12 +261,8 @@ function AdminDashboard() {
                     <td>{u.phone}</td>
                     <td>{u.userType}</td>
                     <td>
-                      <button onClick={() => handleEdit(u, "user")}>
-                        Edit
-                      </button>
-                      <button onClick={() => deleteUser(u._id)}>
-                        Delete
-                      </button>
+                      <button onClick={() => handleEdit(u, "user")}>Edit</button>
+                      <button onClick={() => deleteUser(u._id)}>Delete</button>
                     </td>
                   </tr>
                 ))}
@@ -316,12 +313,8 @@ function AdminDashboard() {
                     <td>{a.position}</td>
                     <td>{a.year}</td>
                     <td>
-                      <button onClick={() => handleEdit(a, "alumni")}>
-                        Edit
-                      </button>
-                      <button onClick={() => deleteAlumni(a._id)}>
-                        Delete
-                      </button>
+                      <button onClick={() => handleEdit(a, "alumni")}>Edit</button>
+                      <button onClick={() => deleteAlumni(a._id)}>Delete</button>
                     </td>
                   </tr>
                 ))}
@@ -343,6 +336,7 @@ function AdminDashboard() {
                   date: "",
                   time: "",
                   mode: "",
+                  zoomLink: "",
                 });
               }}
             >
@@ -356,6 +350,7 @@ function AdminDashboard() {
                   <th>Date</th>
                   <th>Time</th>
                   <th>Mode</th>
+                  <th>Meeting</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -367,16 +362,25 @@ function AdminDashboard() {
                     <td>{e.date}</td>
                     <td>{e.time}</td>
                     <td>{e.mode}</td>
+
                     <td>
-                      <button onClick={() => handleEdit(e, "event")}>
-                        Edit
-                      </button>
-                      <button onClick={() => deleteEvent(e._id)}>
-                        Delete
-                      </button>
-                      <button onClick={() => viewStudents(e._id)}>
-                        Students
-                      </button>
+                      {e.mode === "Online" ? (
+                        isMeetingLive(e.date, e.time) ? (
+                          <a href={e.zoomLink} target="_blank" rel="noreferrer">
+                            <button>Join</button>
+                          </a>
+                        ) : (
+                          <button disabled>Not Live</button>
+                        )
+                      ) : (
+                        "-"
+                      )}
+                    </td>
+
+                    <td>
+                      <button onClick={() => handleEdit(e, "event")}>Edit</button>
+                      <button onClick={() => deleteEvent(e._id)}>Delete</button>
+                      <button onClick={() => viewStudents(e._id)}>Students</button>
                     </td>
                   </tr>
                 ))}
@@ -400,7 +404,6 @@ function AdminDashboard() {
                   <th>Phone</th>
                 </tr>
               </thead>
-
               <tbody>
                 {students.map((s) => (
                   <tr key={s._id}>
@@ -412,9 +415,7 @@ function AdminDashboard() {
               </tbody>
             </table>
 
-            <button onClick={() => setShowStudents(false)}>
-              Close
-            </button>
+            <button onClick={() => setShowStudents(false)}>Close</button>
           </div>
         </div>
       )}
@@ -443,63 +444,22 @@ function AdminDashboard() {
               <form onSubmit={saveAlumni}>
                 <h2>{isEdit ? "Edit Alumni" : "Add Alumni"}</h2>
 
-                <input
-                  placeholder="Name"
-                  value={alumniForm.name}
-                  onChange={(e) =>
-                    setAlumniForm({
-                      ...alumniForm,
-                      name: e.target.value,
-                    })
-                  }
+                <input placeholder="Name" value={alumniForm.name}
+                  onChange={(e) => setAlumniForm({...alumniForm, name: e.target.value})}
                 />
-
-                <input
-                  placeholder="Email"
-                  value={alumniForm.email}
-                  onChange={(e) =>
-                    setAlumniForm({
-                      ...alumniForm,
-                      email: e.target.value,
-                    })
-                  }
+                <input placeholder="Email" value={alumniForm.email}
+                  onChange={(e) => setAlumniForm({...alumniForm, email: e.target.value})}
                 />
-
-                <input
-                  placeholder="Company"
-                  value={alumniForm.company}
-                  onChange={(e) =>
-                    setAlumniForm({
-                      ...alumniForm,
-                      company: e.target.value,
-                    })
-                  }
+                <input placeholder="Company" value={alumniForm.company}
+                  onChange={(e) => setAlumniForm({...alumniForm, company: e.target.value})}
                 />
-
-                <input
-                  placeholder="Position"
-                  value={alumniForm.position}
-                  onChange={(e) =>
-                    setAlumniForm({
-                      ...alumniForm,
-                      position: e.target.value,
-                    })
-                  }
+                <input placeholder="Position" value={alumniForm.position}
+                  onChange={(e) => setAlumniForm({...alumniForm, position: e.target.value})}
                 />
-
-                <input
-                  placeholder="Year"
-                  value={alumniForm.year}
-                  onChange={(e) =>
-                    setAlumniForm({
-                      ...alumniForm,
-                      year: e.target.value,
-                    })
-                  }
+                <input placeholder="Year" value={alumniForm.year}
+                  onChange={(e) => setAlumniForm({...alumniForm, year: e.target.value})}
                 />
-
-                <input
-                  type="file"
+                <input type="file"
                   onChange={(e) =>
                     setAlumniForm({
                       ...alumniForm,
@@ -520,10 +480,7 @@ function AdminDashboard() {
                   placeholder="Title"
                   value={eventForm.title}
                   onChange={(e) =>
-                    setEventForm({
-                      ...eventForm,
-                      title: e.target.value,
-                    })
+                    setEventForm({ ...eventForm, title: e.target.value })
                   }
                 />
 
@@ -531,10 +488,7 @@ function AdminDashboard() {
                   type="date"
                   value={eventForm.date}
                   onChange={(e) =>
-                    setEventForm({
-                      ...eventForm,
-                      date: e.target.value,
-                    })
+                    setEventForm({ ...eventForm, date: e.target.value })
                   }
                 />
 
@@ -542,20 +496,14 @@ function AdminDashboard() {
                   type="time"
                   value={eventForm.time}
                   onChange={(e) =>
-                    setEventForm({
-                      ...eventForm,
-                      time: e.target.value,
-                    })
+                    setEventForm({ ...eventForm, time: e.target.value })
                   }
                 />
 
                 <select
                   value={eventForm.mode}
                   onChange={(e) =>
-                    setEventForm({
-                      ...eventForm,
-                      mode: e.target.value,
-                    })
+                    setEventForm({ ...eventForm, mode: e.target.value })
                   }
                 >
                   <option value="">Select Mode</option>
@@ -563,13 +511,25 @@ function AdminDashboard() {
                   <option value="Offline">Offline</option>
                 </select>
 
+                {eventForm.mode === "Online" && (
+                  <input
+                    type="text"
+                    placeholder="Zoom Link"
+                    value={eventForm.zoomLink}
+                    onChange={(e) =>
+                      setEventForm({
+                        ...eventForm,
+                        zoomLink: e.target.value,
+                      })
+                    }
+                  />
+                )}
+
                 <button onClick={saveEvent}>Save</button>
               </>
             )}
 
-            <button onClick={() => setShowModal(false)}>
-              Cancel
-            </button>
+            <button onClick={() => setShowModal(false)}>Cancel</button>
           </div>
         </div>
       )}

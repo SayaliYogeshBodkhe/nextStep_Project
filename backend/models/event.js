@@ -22,6 +22,7 @@ const eventSchema = new mongoose.Schema(
       required: true,
       enum: ["Online", "Offline"],
     },
+    zoomLink: String 
   },
   {
     timestamps: true,

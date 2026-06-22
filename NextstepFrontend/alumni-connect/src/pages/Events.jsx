@@ -6,7 +6,7 @@ function Events() {
   const [events, setEvents] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
 
-  const [selectedEvent, setSelectedEvent] = useState("");
+  const [selectedEvent, setSelectedEvent] = useState(null);
   const [selectedEventId, setSelectedEventId] = useState("");
 
   const [formData, setFormData] = useState({
@@ -18,10 +18,7 @@ function Events() {
   /* ================= FETCH EVENTS ================= */
   const fetchEvents = async () => {
     try {
-      const res = await fetch(
-        "http://localhost:5000/getEvents"
-      );
-
+      const res = await fetch("http://localhost:5000/getEvents");
       const data = await res.json();
 
       if (data.status === "ok") {
@@ -38,7 +35,7 @@ function Events() {
 
   /* ================= OPEN POPUP ================= */
   const openPopup = (event) => {
-    setSelectedEvent(event.title);
+    setSelectedEvent(event);        // ✅ full object
     setSelectedEventId(event._id);
     setShowPopup(true);
   };
@@ -47,8 +44,7 @@ function Events() {
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]:
-        e.target.value,
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -57,35 +53,30 @@ function Events() {
     e.preventDefault();
 
     try {
-      const res = await fetch(
-        "http://localhost:5000/registerEvent",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-          body: JSON.stringify({
-            eventId:
-              selectedEventId,
-            eventTitle:
-              selectedEvent,
-            name: formData.name,
-            email:
-              formData.email,
-            phone:
-              formData.phone,
-          }),
-        }
-      );
+      const res = await fetch("http://localhost:5000/registerEvent", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
 
-      const data =
-        await res.json();
+        body: JSON.stringify({
+          eventId: selectedEventId,
+          eventTitle: selectedEvent?.title,   // ✅ FIX
+
+          date: selectedEvent?.date,
+          time: selectedEvent?.time,
+          zoomLink: selectedEvent?.zoomLink,
+
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+        }),
+      });
+
+      const data = await res.json();
 
       if (data.status === "ok") {
-        alert(
-          "Registered Successfully ✅"
-        );
+        alert("Registered Successfully ✅");
 
         setShowPopup(false);
 
@@ -95,9 +86,7 @@ function Events() {
           phone: "",
         });
       } else {
-        alert(
-          "Registration Failed ❌"
-        );
+        alert("Registration Failed ❌");
       }
     } catch (error) {
       console.log(error);
@@ -111,57 +100,27 @@ function Events() {
 
       {/* HEADER */}
       <div className="header">
-        <h1>
-          Upcoming Tech Events 🚀
-        </h1>
+        <h1>Upcoming Tech Events 🚀</h1>
       </div>
 
       {/* EVENTS */}
       <div className="events-container">
         {events.length > 0 ? (
           events.map((event) => (
-            <div
-              className="event-card"
-              key={event._id}
-            >
-              <h3>
-                {event.title}
-              </h3>
+            <div className="event-card" key={event._id}>
+              <h3>{event.title}</h3>
 
-              <p>
-                📅 Date:{" "}
-                {event.date}
-              </p>
+              <p>📅 Date:  {event.date}</p>
+              <p>⏰ Time: {event.time}</p>
+              <p>📍 Mode: {event.mode}</p>
 
-              <p>
-                ⏰ Time:{" "}
-                {event.time}
-              </p>
-
-              <p>
-                📍 Mode:{" "}
-                {event.mode}
-              </p>
-
-              <button
-                onClick={() =>
-                  openPopup(
-                    event
-                  )
-                }
-              >
+              <button onClick={() => openPopup(event)}>
                 Register
               </button>
             </div>
           ))
         ) : (
-          <h2
-            style={{
-              textAlign:
-                "center",
-              width: "100%",
-            }}
-          >
+          <h2 style={{ textAlign: "center", width: "100%" }}>
             No Events Found
           </h2>
         )}
@@ -171,29 +130,17 @@ function Events() {
       {showPopup && (
         <div className="popup-overlay">
           <div className="popup-box">
-            <h2>
-              Register Event
-            </h2>
+            <h2>Register Event</h2>
 
-            <h3>
-              {selectedEvent}
-            </h3>
+            <h3>{selectedEvent?.title}</h3> {/* ✅ FIX */}
 
-            <form
-              onSubmit={
-                handleRegister
-              }
-            >
+            <form onSubmit={handleRegister}>
               <input
                 type="text"
                 name="name"
                 placeholder="Enter Name"
-                value={
-                  formData.name
-                }
-                onChange={
-                  handleChange
-                }
+                value={formData.name}
+                onChange={handleChange}
                 required
               />
 
@@ -201,12 +148,8 @@ function Events() {
                 type="email"
                 name="email"
                 placeholder="Enter Email"
-                value={
-                  formData.email
-                }
-                onChange={
-                  handleChange
-                }
+                value={formData.email}
+                onChange={handleChange}
                 required
               />
 
@@ -214,27 +157,17 @@ function Events() {
                 type="text"
                 name="phone"
                 placeholder="Enter Phone"
-                value={
-                  formData.phone
-                }
-                onChange={
-                  handleChange
-                }
+                value={formData.phone}
+                onChange={handleChange}
                 required
               />
 
               <div className="popup-btns">
-                <button type="submit">
-                  Submit
-                </button>
+                <button type="submit">Submit</button>
 
                 <button
                   type="button"
-                  onClick={() =>
-                    setShowPopup(
-                      false
-                    )
-                  }
+                  onClick={() => setShowPopup(false)}
                 >
                   Cancel
                 </button>
