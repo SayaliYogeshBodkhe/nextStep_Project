@@ -68,6 +68,7 @@ function AdminDashboard() {
   const fetchEvents = async () => {
     const res = await fetch("http://localhost:5000/getEvents");
     const data = await res.json();
+  console.log("Users API:", data); // check this
     if (data.status === "ok") setEvents(data.data);
   };
 
