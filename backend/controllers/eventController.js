@@ -3,22 +3,28 @@ const Notification =
   require("../models/notification");
 
 /* GET EVENTS */
-exports.getEvents = async (
-  req,
-  res
-) => {
+exports.getEvents = async (req, res) => {
   try {
-    const data =
-      await Event.find().sort({
-        date: 1,
-      });
+    const now = new Date();
+    const events = await Event.find();
+
+    const data = events
+      .filter((event) => {
+        const eventDateTime = new Date(`${event.date}T${event.time}`);
+        return eventDateTime >= now;
+      })
+      .sort(
+        (a, b) =>
+          new Date(`${a.date}T${a.time}`) -
+          new Date(`${b.date}T${b.time}`)
+      );
 
     res.json({
       status: "ok",
       data,
     });
-
-  } catch {
+  } catch (error) {
+    console.log("GET EVENTS ERROR:", error);
     res.json({
       status: "error",
     });
@@ -26,16 +32,14 @@ exports.getEvents = async (
 };
 
 /* ADD EVENT */
-exports.addEvent = async (
-  req,
-  res
-) => {
+exports.addEvent = async (req, res) => {
   try {
     const {
       title,
       date,
       time,
       mode,
+      zoomLink,
     } = req.body;
 
     await Event.create({
@@ -43,13 +47,14 @@ exports.addEvent = async (
       date,
       time,
       mode,
+      zoomLink,
     });
 
     res.json({
       status: "ok",
     });
-
-  } catch {
+  } catch (error) {
+    console.log("ADD EVENT ERROR:", error);
     res.json({
       status: "error",
     });
@@ -57,40 +62,37 @@ exports.addEvent = async (
 };
 
 /* UPDATE EVENT */
-exports.updateEvent =
-  async (req, res) => {
-    try {
-      await Event.findByIdAndUpdate(
-        req.params.id,
-        req.body
-      );
+exports.updateEvent = async (req, res) => {
+  try {
+    await Event.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
 
-      res.json({
-        status: "ok",
-      });
-
-    } catch {
-      res.json({
-        status: "error",
-      });
-    }
-  };
+    res.json({
+      status: "ok",
+    });
+  } catch (error) {
+    console.log("UPDATE EVENT ERROR:", error);
+    res.json({
+      status: "error",
+    });
+  }
+};
 
 /* DELETE EVENT */
-exports.deleteEvent =
-  async (req, res) => {
-    try {
-      await Event.findByIdAndDelete(
-        req.params.id
-      );
+exports.deleteEvent = async (req, res) => {
+  try {
+    await Event.findByIdAndDelete(req.params.id);
 
-      res.json({
-        status: "ok",
-      });
-
-    } catch {
-      res.json({
-        status: "error",
-      });
-    }
-  };
+    res.json({
+      status: "ok",
+    });
+  } catch (error) {
+    console.log("DELETE EVENT ERROR:", error);
+    res.json({
+      status: "error",
+    });
+  }
+};

@@ -43,12 +43,8 @@ app.use(
 
 app.use(
   session({
-    secret:
-      process.env.SESSION_SECRET ||
-      "mysecret",
-
+    secret: process.env.SESSION_SECRET || "mysecret",
     resave: false,
-
     saveUninitialized: false,
   })
 );
@@ -58,34 +54,32 @@ app.use(passport.session());
 app.use(notificationRoutes);
 
 /* STATIC */
-app.use(
-  "/uploads",
-  express.static("uploads")
-);
+app.use("/uploads", express.static("uploads"));
 
 /* DATABASE */
 connectDB();
 
+/* CRON JOB */
+require("./cron/meetingCron");
+
 /* ROUTES */
 app.use(authRoutes);
-
 app.use(alumniRoutes);
-
 app.use(eventRoutes);
-
 app.use(registrationRoutes);
-
 app.use(mailRoutes);
 app.use("/", roadmapRoutes);
 app.use("/", resourceRoutes);
 
 /* SERVER */
+<<<<<<< HEAD
 const PORT =
   process.env.PORT || 5000;
   
+=======
+const PORT = process.env.PORT || 5000;
+>>>>>>> main
 
 app.listen(PORT, () => {
-  console.log(
-    `🚀 Server running on port ${PORT}`
-  );
+  console.log(`🚀 Server running on port ${PORT}`);
 });

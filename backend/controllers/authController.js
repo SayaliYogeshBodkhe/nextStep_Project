@@ -1,9 +1,8 @@
 const bcrypt = require("bcryptjs");
 
-const User = require("../models/user");
+const User = require("../models/User");
 
-const transporter = require("./mailController");
-
+const { transporter } = require("./mailController");
 /* OTP STORE */
 let otpStore = {};
 

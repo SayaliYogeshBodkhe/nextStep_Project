@@ -20,6 +20,7 @@ function Home() {
     getEvents();
   }, []);
 
+  /* ================= FETCH EVENTS ================= */
   const getEvents = async () => {
     try {
       const res = await axios.get(
@@ -34,15 +35,16 @@ function Home() {
     }
   };
 
-  /* OPEN POPUP */
+  /* ================= POPUP OPEN ================= */
   const openPopup = (event) => {
     setSelectedEvent(event);
     setShowPopup(true);
   };
 
-  /* CLOSE POPUP */
+  /* ================= POPUP CLOSE ================= */
   const closePopup = () => {
     setShowPopup(false);
+    setSelectedEvent(null);
 
     setFormData({
       name: "",
@@ -51,16 +53,15 @@ function Home() {
     });
   };
 
-  /* INPUT CHANGE */
+  /* ================= INPUT CHANGE ================= */
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]:
-        e.target.value,
+      [e.target.name]: e.target.value,
     });
   };
 
-  /* REGISTER EVENT */
+  /* ================= REGISTER EVENT ================= */
   const handleRegister = async (e) => {
     e.preventDefault();
 
@@ -68,36 +69,25 @@ function Home() {
       const res = await axios.post(
         "https://nextstep-project-1.onrender.com/registerEvent",
         {
-          eventId:
-            selectedEvent._id,
-
-          eventTitle:
-            selectedEvent.title,   // ✅ IMPORTANT
-
+          eventId: selectedEvent._id,
+          eventTitle: selectedEvent.title,
+          date: selectedEvent.date,
+          time: selectedEvent.time,
+          zoomLink: selectedEvent.zoomLink,
           name: formData.name,
-          email:
-            formData.email,
-          phone:
-            formData.phone,
+          email: formData.email,
+          phone: formData.phone,
         }
       );
 
-      if (
-        res.data.status === "ok"
-      ) {
-        alert(
-          "Registered Successfully ✅\nEmail Sent 📧"
-        );
-
+      if (res.data.status === "ok") {
+        alert("Registered Successfully ✅\nEmail Sent 📧");
         closePopup();
       } else {
-        alert(
-          "Registration Failed ❌"
-        );
+        alert("Registration Failed ❌");
       }
     } catch (error) {
       console.log(error);
-
       alert("Server Error ❌");
     }
   };
@@ -108,68 +98,37 @@ function Home() {
 
       {/* HERO */}
       <div className="hero">
-        <h1>
-          Get Placement Ready
-          with Alumni Guidance
-        </h1>
-
-        <p>
-          Join events, learn
-          skills and connect
-          with alumni
-        </p>
+        <h1>Get Placement Ready with Alumni Guidance</h1>
+        <p>Join events, learn skills and connect with alumni</p>
 
         <Link to="/events">
-          <button>
-            Explore Events
-          </button>
+          <button>Explore Events</button>
         </Link>
       </div>
 
       {/* EVENTS */}
       <div className="events">
-        <h2>
-          Upcoming Events
-        </h2>
+        <h2>Upcoming Events</h2>
 
         <div className="cards">
-          {events
-            .slice(0, 3)
-            .map((event) => (
-              <div
-                className="card"
-                key={event._id}
-              >
-                <h3>
-                  {event.title}
-                </h3>
+          {events.slice(0, 3).map((event) => (
+            <div className="card" key={event._id}>
+              <h3>{event.title}</h3>
+              <p>Date: {event.date}</p>
+              <p>Time: {event.time}</p>
+              <p>Mode: {event.mode}</p>
 
-                <p>
-                  Date:
-                  {event.date}
-                </p>
-
-                <p>
-                  Time:
-                  {event.time}
-                </p>
-
-                <p>
-                  Mode:
-                  {event.mode}
-                </p>
-
-                <button
-                  onClick={() =>
-                    openPopup(
-                      event
-                    )
-                  }
-                >
+              {event.meetingCompleted ? null : event.meetingLive ? (
+                <a href={event.zoomLink} target="_blank" rel="noreferrer">
+                  <button>Join Now</button>
+                </a>
+              ) : (
+                <button onClick={() => openPopup(event)}>
                   Register
                 </button>
-              </div>
-            ))}
+              )}
+            </div>
+          ))}
         </div>
       </div>
 
@@ -177,31 +136,16 @@ function Home() {
       {showPopup && (
         <div className="popup-overlay">
           <div className="popup">
-            <h2>
-              Register Event
-            </h2>
+            <h2>Register Event</h2>
+            <h3>{selectedEvent?.title}</h3>
 
-            <h3>
-              {
-                selectedEvent.title
-              }
-            </h3>
-
-            <form
-              onSubmit={
-                handleRegister
-              }
-            >
+            <form onSubmit={handleRegister}>
               <input
                 type="text"
                 name="name"
                 placeholder="Enter Name"
-                value={
-                  formData.name
-                }
-                onChange={
-                  handleChange
-                }
+                value={formData.name}
+                onChange={handleChange}
                 required
               />
 
@@ -209,12 +153,8 @@ function Home() {
                 type="email"
                 name="email"
                 placeholder="Enter Email"
-                value={
-                  formData.email
-                }
-                onChange={
-                  handleChange
-                }
+                value={formData.email}
+                onChange={handleChange}
                 required
               />
 
@@ -222,29 +162,20 @@ function Home() {
                 type="text"
                 name="phone"
                 placeholder="Enter Phone"
-                value={
-                  formData.phone
-                }
-                onChange={
-                  handleChange
-                }
+                value={formData.phone}
+                onChange={handleChange}
                 required
               />
 
               <div className="popup-buttons">
-                <button
-                  type="submit"
-                  className="submit-btn"
-                >
+                <button type="submit" className="submit-btn">
                   Submit
                 </button>
 
                 <button
                   type="button"
                   className="cancel-btn"
-                  onClick={
-                    closePopup
-                  }
+                  onClick={closePopup}
                 >
                   Cancel
                 </button>
