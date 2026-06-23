@@ -16,7 +16,6 @@ exports.registerEvent = async (req, res) => {
     } = req.body;
 
     console.log("REQ BODY:", req.body);
-    console.log("zoomLink received:", zoomLink);
 
     // Save registration
     await Registration.create({
@@ -30,7 +29,7 @@ exports.registerEvent = async (req, res) => {
       phone,
     });
 
-    // Send EMAIL (ONLY ONE EMAIL)
+    // Send confirmation email
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: email,
@@ -59,27 +58,23 @@ exports.registerEvent = async (req, res) => {
           }
 
           <br/>
-
           <p>We look forward to seeing you!</p>
-
           <p>Thank you,<br/>Team</p>
         </div>
       `,
     });
 
-    return res.json({ status: "ok" });
-
+    res.json({ status: "ok" });
   } catch (err) {
-    console.log("Registration Error:", err);
-    return res.json({ status: "error" });
+    console.log("REGISTER EVENT ERROR:", err);
+    res.json({ status: "error" });
   }
 };
 
-/* GET ALL REGISTRATIONS */
+/* GET ALL */
 exports.getRegistrations = async (req, res) => {
   try {
     const data = await Registration.find();
-
     res.json({
       status: "ok",
       data,
@@ -90,7 +85,7 @@ exports.getRegistrations = async (req, res) => {
   }
 };
 
-/* GET EVENT STUDENTS */
+/* EVENT STUDENTS */
 exports.getEventStudents = async (req, res) => {
   try {
     const data = await Registration.find({
@@ -107,11 +102,10 @@ exports.getEventStudents = async (req, res) => {
   }
 };
 
-/* DELETE REGISTRATION */
+/* DELETE */
 exports.deleteRegistration = async (req, res) => {
   try {
     await Registration.findByIdAndDelete(req.params.id);
-
     res.json({ status: "ok" });
   } catch (err) {
     console.log(err);

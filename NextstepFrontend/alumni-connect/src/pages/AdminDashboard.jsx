@@ -202,12 +202,22 @@ function AdminDashboard() {
     return matchSearch && matchFilter;
   });
 
-  const isMeetingLive = (date, time) => {
-    const eventDateTime = new Date(`${date}T${time}`);
-    const now = new Date();
-    return now >= eventDateTime;
-  };
+  const getEventStatus = (date, time) => {
+  const eventDateTime = new Date(`${date}T${time}`);
+  const now = new Date();
 
+  const diff = eventDateTime - now;
+
+  if (diff > 0) {
+    return "Upcoming";
+  }
+
+  if (diff <= 0 && diff >= -60 * 60 * 1000) {
+    return "Live Now";
+  }
+
+  return "Completed";
+};
   return (    <div className="admin-layout">
       <div className="sidebar">
         <h2>Admin Panel</h2>
@@ -355,36 +365,60 @@ function AdminDashboard() {
                 </tr>
               </thead>
 
-              <tbody>
-                {events.map((e) => (
+             <tbody>
+              {events.map((e) => {
+                const status = getEventStatus(e.date, e.time);
+
+                return (
                   <tr key={e._id}>
                     <td>{e.title}</td>
                     <td>{e.date}</td>
                     <td>{e.time}</td>
                     <td>{e.mode}</td>
 
+                    {/* STATUS */}
+                    <td>
+                      {status === "Upcoming" && (
+                        <span style={{ color: "orange", fontWeight: "bold" }}>
+                          Upcoming 🟡
+                        </span>
+                      )}
+
+                      {status === "Live Now" && (
+                        <span style={{ color: "green", fontWeight: "bold" }}>
+                          Live Now 🔴
+                        </span>
+                      )}
+
+                      {status === "Completed" && (
+                        <span style={{ color: "gray", fontWeight: "bold" }}>
+                          Completed ✅
+                        </span>
+                      )}
+                    </td>
+
+                    {/* ACTIONS */}
                     <td>
                       {e.mode === "Online" ? (
-                        isMeetingLive(e.date, e.time) ? (
+                        status !== "Upcoming" ? (
                           <a href={e.zoomLink} target="_blank" rel="noreferrer">
                             <button>Join</button>
                           </a>
                         ) : (
-                          <button disabled>Not Live</button>
+                          <button disabled>Not Started</button>
                         )
                       ) : (
                         "-"
                       )}
-                    </td>
 
-                    <td>
                       <button onClick={() => handleEdit(e, "event")}>Edit</button>
                       <button onClick={() => deleteEvent(e._id)}>Delete</button>
                       <button onClick={() => viewStudents(e._id)}>Students</button>
                     </td>
                   </tr>
-                ))}
-              </tbody>
+                );
+              })}
+            </tbody>
             </table>
           </>
         )}

@@ -65,23 +65,19 @@ function Home() {
     e.preventDefault();
 
     try {
-      const res = await axios.post(
+            const res = await axios.post(
         "http://localhost:5000/registerEvent",
         {
-          eventId:
-            selectedEvent._id,
-
-          eventTitle:
-            selectedEvent.title,   // ✅ IMPORTANT
-
+          eventId: selectedEvent._id,
+          eventTitle: selectedEvent.title,
+          date: selectedEvent.date,
+          time: selectedEvent.time,
+          zoomLink: selectedEvent.zoomLink,
           name: formData.name,
-          email:
-            formData.email,
-          phone:
-            formData.phone,
+          email: formData.email,
+          phone: formData.phone,
         }
       );
-
       if (
         res.data.status === "ok"
       ) {
@@ -159,15 +155,21 @@ function Home() {
                   {event.mode}
                 </p>
 
-                <button
-                  onClick={() =>
-                    openPopup(
-                      event
-                    )
-                  }
-                >
-                  Register
-                </button>
+              {event.meetingCompleted ? null : event.meetingLive ? (
+              <a
+                href={event.zoomLink}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <button>Join Now</button>
+              </a>
+            ) : (
+              <button
+                onClick={() => openPopup(event)}
+              >
+                Register
+              </button>
+            )}
               </div>
             ))}
         </div>
@@ -257,4 +259,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default Home; 

@@ -105,26 +105,38 @@ function Events() {
 
       {/* EVENTS */}
       <div className="events-container">
-        {events.length > 0 ? (
-          events.map((event) => (
-            <div className="event-card" key={event._id}>
-              <h3>{event.title}</h3>
+      {events.length > 0 ? (
+        events.map((event) => (
+          <div className="event-card" key={event._id}>
+            <h3>{event.title}</h3>
 
-              <p>📅 Date:  {event.date}</p>
-              <p>⏰ Time: {event.time}</p>
-              <p>📍 Mode: {event.mode}</p>
+            <p>📅 Date: {event.date}</p>
+            <p>⏰ Time: {event.time}</p>
+            <p>📍 Mode: {event.mode}</p>
 
-              <button onClick={() => openPopup(event)}>
-                Register
-              </button>
-            </div>
-          ))
+          {event.meetingCompleted ? null : event.meetingLive ? (
+          <a
+            href={event.zoomLink}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <button>Join Now</button>
+          </a>
         ) : (
-          <h2 style={{ textAlign: "center", width: "100%" }}>
-            No Events Found
-          </h2>
+          <button
+            onClick={() => openPopup(event)}
+          >
+            Register
+          </button>
         )}
-      </div>
+          </div>
+        ))
+      ) : (
+        <h2 style={{ textAlign: "center", width: "100%" }}>
+          No Events Found
+        </h2>
+      )}
+    </div>
 
       {/* POPUP */}
       {showPopup && (
