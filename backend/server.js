@@ -5,26 +5,19 @@ const cors = require("cors");
 const session = require("express-session");
 const passport = require("passport");
 
-
 require("./auth/google");
-require("./cron/deleteExpiredEvents");
-require("./cron/sendEventReminder");
+require("./cron/meetingCron"); // only this exists now
 
 const connectDB = require("./config/db");
 
 const authRoutes = require("./routes/authRoutes");
-const notificationRoutes =
-  require(
-    "./routes/notificationRoutes"
-  );
+const notificationRoutes = require("./routes/notificationRoutes");
 const alumniRoutes = require("./routes/alumniRoutes");
 const eventRoutes = require("./routes/eventRoutes");
 const registrationRoutes = require("./routes/registrationRoutes");
 const mailRoutes = require("./routes/mailRoutes");
 const roadmapRoutes = require("./routes/roadmapRoutes");
-const resourceRoutes = require(
-  "./routes/resourceRoutes"
-);
+const resourceRoutes = require("./routes/resourceRoutes");
 
 const app = express();
 
@@ -35,7 +28,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "https://your-frontend-vercel-url.vercel.app"
+      "https://your-frontend-vercel-url.vercel.app",
     ],
     credentials: true,
   })
@@ -51,16 +44,14 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
+
 app.use(notificationRoutes);
 
 /* STATIC */
 app.use("/uploads", express.static("uploads"));
 
-/* DATABASE */
+/* DB */
 connectDB();
-
-/* CRON JOB */
-require("./cron/meetingCron");
 
 /* ROUTES */
 app.use(authRoutes);
@@ -72,13 +63,7 @@ app.use("/", roadmapRoutes);
 app.use("/", resourceRoutes);
 
 /* SERVER */
-<<<<<<< HEAD
-const PORT =
-  process.env.PORT || 5000;
-  
-=======
 const PORT = process.env.PORT || 5000;
->>>>>>> main
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);

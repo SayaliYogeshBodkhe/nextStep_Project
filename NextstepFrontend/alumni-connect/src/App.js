@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useEffect } from "react";
 
+/* Pages */
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Events from "./pages/Events";
@@ -16,7 +17,7 @@ import Signup from "./pages/Signup";
 import AdminDashboard from "./pages/AdminDashboard";
 import RoadmapDetails from "./pages/RoadmapDetails";
 
-/* PROTECTED ROUTES */
+/* Protected Routes */
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
 
@@ -24,40 +25,48 @@ function App() {
 
   useEffect(() => {
 
-    fetch("https://nextstep-project-1.onrender.com/current-user", {
-  credentials: "include",
-})
-      .then((res) => res.json())
-      .then((user) => {
+    const getCurrentUser = async () => {
+      try {
+        const res = await fetch(
+          "https://nextstep-project-1.onrender.com/current-user",
+          {
+            credentials: "include",
+          }
+        );
 
-        if (user && user.userType) {
-
-          localStorage.setItem(
-            "userType",
-            user.userType
-          );
-
+        if (!res.ok) {
+          console.log("Current user API failed");
+          return;
         }
 
-      })
-      .catch((err) => console.log(err));
+        const data = await res.json();
+        console.log("CURRENT USER:", data);
+
+        // 🔥 SAFE ROLE EXTRACTION (important fix)
+        const role = data?.user?.userType || data?.user?.role;
+
+        if (role) {
+          localStorage.setItem("userType", role);
+        }
+
+      } catch (err) {
+        console.log("Error fetching current user:", err);
+      }
+    };
+
+    getCurrentUser();
 
   }, []);
 
   return (
-
     <BrowserRouter>
-
       <Routes>
 
         {/* ================= PUBLIC ROUTES ================= */}
-
         <Route path="/login" element={<Login />} />
-
         <Route path="/signup" element={<Signup />} />
 
         {/* ================= PROTECTED USER ROUTES ================= */}
-
         <Route
           path="/"
           element={
@@ -158,7 +167,6 @@ function App() {
         />
 
         {/* ================= ADMIN ROUTE ================= */}
-
         <Route
           path="/admin-dashboard"
           element={
@@ -169,7 +177,6 @@ function App() {
         />
 
       </Routes>
-
     </BrowserRouter>
   );
 }

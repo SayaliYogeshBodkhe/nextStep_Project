@@ -23,7 +23,8 @@ body {
 
 /* EVENTS GRID */
 .events-container {
-  width: 10%;
+  width: 90%;
+  max-width: 1200px;
   margin: 30px auto;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));

@@ -1,46 +1,46 @@
 const Event = require("../models/event");
-const Notification =
-  require("../models/notification");
 
-/* GET EVENTS */
+/* ================= GET EVENTS (WITH STATUS) ================= */
 exports.getEvents = async (req, res) => {
   try {
     const now = new Date();
     const events = await Event.find();
 
-    const data = events
-      .filter((event) => {
-        const eventDateTime = new Date(`${event.date}T${event.time}`);
-        return eventDateTime >= now;
-      })
-      .sort(
-        (a, b) =>
-          new Date(`${a.date}T${a.time}`) -
-          new Date(`${b.date}T${b.time}`)
-      );
+    const data = events.map((event) => {
+      const start = new Date(`${event.date}T${event.time}`);
+      const end = new Date(start);
+      end.setHours(end.getHours() + 1);
+
+      let status = "UPCOMING";
+
+      if (now >= start && now < end) {
+        status = "LIVE";
+      } else if (now >= end) {
+        status = "COMPLETED";
+      }
+
+      return {
+        ...event._doc,
+        status,
+      };
+    });
 
     res.json({
       status: "ok",
       data,
     });
+
   } catch (error) {
     console.log("GET EVENTS ERROR:", error);
-    res.json({
-      status: "error",
-    });
+    res.json({ status: "error" });
   }
 };
 
-/* ADD EVENT */
+
+/* ================= ADD EVENT ================= */
 exports.addEvent = async (req, res) => {
   try {
-    const {
-      title,
-      date,
-      time,
-      mode,
-      zoomLink,
-    } = req.body;
+    const { title, date, time, mode, zoomLink } = req.body;
 
     await Event.create({
       title,
@@ -50,49 +50,38 @@ exports.addEvent = async (req, res) => {
       zoomLink,
     });
 
-    res.json({
-      status: "ok",
-    });
+    res.json({ status: "ok" });
+
   } catch (error) {
     console.log("ADD EVENT ERROR:", error);
-    res.json({
-      status: "error",
-    });
+    res.json({ status: "error" });
   }
 };
 
-/* UPDATE EVENT */
+
+/* ================= UPDATE EVENT ================= */
 exports.updateEvent = async (req, res) => {
   try {
-    await Event.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
+    await Event.findByIdAndUpdate(req.params.id, req.body);
 
-    res.json({
-      status: "ok",
-    });
+    res.json({ status: "ok" });
+
   } catch (error) {
     console.log("UPDATE EVENT ERROR:", error);
-    res.json({
-      status: "error",
-    });
+    res.json({ status: "error" });
   }
 };
 
-/* DELETE EVENT */
+
+/* ================= DELETE EVENT ================= */
 exports.deleteEvent = async (req, res) => {
   try {
     await Event.findByIdAndDelete(req.params.id);
 
-    res.json({
-      status: "ok",
-    });
+    res.json({ status: "ok" });
+
   } catch (error) {
     console.log("DELETE EVENT ERROR:", error);
-    res.json({
-      status: "error",
-    });
+    res.json({ status: "error" });
   }
 };

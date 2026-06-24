@@ -1,9 +1,4 @@
 const Registration = require("../models/registration");
-<<<<<<< HEAD
-const Event = require("../models/event");
-
-=======
->>>>>>> main
 const { transporter } = require("./mailController");
 
 /* REGISTER EVENT */
@@ -21,6 +16,7 @@ exports.registerEvent = async (req, res) => {
     } = req.body;
 
     console.log("REQ BODY:", req.body);
+    console.log("zoomLink received:", zoomLink);
 
     // Save registration
     await Registration.create({
@@ -28,13 +24,12 @@ exports.registerEvent = async (req, res) => {
       eventTitle,
       date,
       time,
-      zoomLink,
       name,
       email,
       phone,
     });
 
-    // Send confirmation email
+    // Send EMAIL (ONLY ONE EMAIL)
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: email,
@@ -63,23 +58,27 @@ exports.registerEvent = async (req, res) => {
           }
 
           <br/>
+
           <p>We look forward to seeing you!</p>
+
           <p>Thank you,<br/>Team</p>
         </div>
       `,
     });
 
-    res.json({ status: "ok" });
+    return res.json({ status: "ok" });
+
   } catch (err) {
-    console.log("REGISTER EVENT ERROR:", err);
-    res.json({ status: "error" });
+    console.log("Registration Error:", err);
+    return res.json({ status: "error" });
   }
 };
 
-/* GET ALL */
+/* GET ALL REGISTRATIONS */
 exports.getRegistrations = async (req, res) => {
   try {
     const data = await Registration.find();
+
     res.json({
       status: "ok",
       data,
@@ -90,7 +89,7 @@ exports.getRegistrations = async (req, res) => {
   }
 };
 
-/* EVENT STUDENTS */
+/* GET EVENT STUDENTS */
 exports.getEventStudents = async (req, res) => {
   try {
     const data = await Registration.find({
@@ -107,10 +106,11 @@ exports.getEventStudents = async (req, res) => {
   }
 };
 
-/* DELETE */
+/* DELETE REGISTRATION */
 exports.deleteRegistration = async (req, res) => {
   try {
     await Registration.findByIdAndDelete(req.params.id);
+
     res.json({ status: "ok" });
   } catch (err) {
     console.log(err);

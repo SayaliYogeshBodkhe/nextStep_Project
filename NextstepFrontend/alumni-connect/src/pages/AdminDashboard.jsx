@@ -3,14 +3,10 @@ import "./adminDashboard.css";
 import { useNavigate } from "react-router-dom";
 
 function AdminDashboard() {
-  const navigate = useNavigate();
-
   const [users, setUsers] = useState([]);
   const [alumni, setAlumni] = useState([]);
   const [events, setEvents] = useState([]);
   const [students, setStudents] = useState([]);
-  const [roadmaps, setRoadmaps] = useState([]);
-  const [resources, setResources] = useState([]);
 
   const [showStudents, setShowStudents] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -22,24 +18,7 @@ function AdminDashboard() {
   const [filter, setFilter] = useState("All");
   const [activeTab, setActiveTab] = useState("users");
 
-  /* ================= ROADMAP ================= */
-  const [roadmapData, setRoadmapData] = useState({
-    role: "",
-    category: "",
-    icon: "",
-    company: "",
-    location: "",
-    year: "",
-    description: "",
-    duration: "",
-    salary: "",
-    difficulty: "",
-    skills: [],
-    tools: [],
-    resources: [],
-    projects: [],
-    steps: ["", "", ""],
-  });
+  const navigate = useNavigate();
 
   const [userForm, setUserForm] = useState({
     name: "",
@@ -65,128 +44,189 @@ function AdminDashboard() {
     zoomLink: "",
   });
 
-  const [resourceData, setResourceData] = useState({
-    title: "",
-    category: "",
-    type: "",
-    thumbnail: "",
-    link: "",
-    description: "",
-  });
-
-  /* ================= AUTH ================= */
+  // auth check
   useEffect(() => {
     const role = localStorage.getItem("userType");
+
     if (!role) navigate("/login");
     else if (role !== "Admin") navigate("/");
   }, [navigate]);
 
-  /* ================= FETCH ================= */
+  // fetch data
   const fetchUsers = async () => {
-    const res = await fetch("https://nextstep-project-1.onrender.com/getUsers");
+    const res = await fetch("http://localhost:5000/getUsers");
     const data = await res.json();
     if (data.status === "ok") setUsers(data.data);
   };
 
   const fetchAlumni = async () => {
-    const res = await fetch("https://nextstep-project-1.onrender.com/getAlumni");
+    const res = await fetch("http://localhost:5000/getAlumni");
     const data = await res.json();
     if (data.status === "ok") setAlumni(data.data);
   };
 
   const fetchEvents = async () => {
-    const res = await fetch("https://nextstep-project-1.onrender.com/getEvents");
+    const res = await fetch("http://localhost:5000/getEvents");
     const data = await res.json();
     if (data.status === "ok") setEvents(data.data);
-  };
-
-  const fetchRoadmaps = async () => {
-    const res = await fetch("https://nextstep-project-1.onrender.com/getRoadmaps");
-    const data = await res.json();
-    if (data.status === "ok") setRoadmaps(data.data);
-  };
-
-  const fetchResources = async () => {
-    const res = await fetch("https://nextstep-project-1.onrender.com/getResources");
-    const data = await res.json();
-    if (data.status === "ok") setResources(data.data);
   };
 
   useEffect(() => {
     fetchUsers();
     fetchAlumni();
     fetchEvents();
-    fetchRoadmaps();
-    fetchResources();
   }, []);
 
-  /* ================= DELETE ================= */
+  // delete
   const deleteUser = async (id) => {
-    await fetch(`https://nextstep-project-1.onrender.com/deleteUser/${id}`, { method: "DELETE" });
+    await fetch(`http://localhost:5000/deleteUser/${id}`, {
+      method: "DELETE",
+    });
     fetchUsers();
   };
 
   const deleteAlumni = async (id) => {
-    await fetch(`https://nextstep-project-1.onrender.com/deleteAlumni/${id}`, { method: "DELETE" });
+    await fetch(`http://localhost:5000/deleteAlumni/${id}`, {
+      method: "DELETE",
+    });
     fetchAlumni();
   };
 
   const deleteEvent = async (id) => {
-    await fetch(`https://nextstep-project-1.onrender.com/deleteEvent/${id}`, { method: "DELETE" });
+    const confirm = window.confirm("Delete this event?");
+    if (!confirm) return;
+
+    await fetch(`http://localhost:5000/deleteEvent/${id}`, {
+      method: "DELETE",
+    });
     fetchEvents();
   };
 
-  const deleteRoadmap = async (id) => {
-    await fetch(`https://nextstep-project-1.onrender.com/deleteRoadmap/${id}`, { method: "DELETE" });
-    fetchRoadmaps();
-  };
-
-  const deleteResource = async (id) => {
-    await fetch(`https://nextstep-project-1.onrender.com/deleteResource/${id}`, { method: "DELETE" });
-    fetchResources();
-  };
-
-  /* ================= EVENT STATUS ================= */
-  const getEventStatus = (date, time) => {
-    const eventDateTime = new Date(`${date}T${time}`);
-    const now = new Date();
-    const diff = eventDateTime - now;
-
-    if (diff > 0) return "Upcoming";
-    if (diff <= 0 && diff >= -3600000) return "Live Now";
-    return "Completed";
-  };
-
-  /* ================= VIEW STUDENTS ================= */
+  // view students
   const viewStudents = async (id) => {
-    const res = await fetch(`https://nextstep-project-1.onrender.com/getEventStudents/${id}`);
+    const res = await fetch(`http://localhost:5000/getEventStudents/${id}`);
     const data = await res.json();
+
     if (data.status === "ok") {
       setStudents(data.data);
       setShowStudents(true);
     }
   };
 
-  /* ================= LOGOUT ================= */
+  // edit
+  const handleEdit = (data, type) => {
+    setShowModal(true);
+    setIsEdit(true);
+    setEditId(data._id);
+
+    if (type === "user") setUserForm(data);
+
+    if (type === "alumni") {
+      setAlumniForm({ ...data, photo: null });
+    }
+
+    if (type === "event") {
+      setEventForm({
+        title: data.title || "",
+        date: data.date || "",
+        time: data.time || "",
+        mode: data.mode || "",
+        zoomLink: data.zoomLink || "",
+      });
+    }
+  };
+
+  // update user
+  const updateUser = async () => {
+    await fetch(`http://localhost:5000/updateUser/${editId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(userForm),
+    });
+
+    fetchUsers();
+    setShowModal(false);
+  };
+
+  // alumni save
+  const saveAlumni = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("name", alumniForm.name);
+    formData.append("email", alumniForm.email);
+    formData.append("company", alumniForm.company);
+    formData.append("position", alumniForm.position);
+    formData.append("year", alumniForm.year);
+
+    if (alumniForm.photo) {
+      formData.append("photo", alumniForm.photo);
+    }
+
+    const url = isEdit
+      ? `http://localhost:5000/updateAlumni/${editId}`
+      : "http://localhost:5000/addAlumni";
+
+    await fetch(url, {
+      method: isEdit ? "PUT" : "POST",
+      body: formData,
+    });
+
+    fetchAlumni();
+    setShowModal(false);
+  };
+
+  // event save
+  const saveEvent = async () => {
+    const url = isEdit
+      ? `http://localhost:5000/updateEvent/${editId}`
+      : "http://localhost:5000/addEvent";
+
+    await fetch(url, {
+      method: isEdit ? "PUT" : "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(eventForm),
+    });
+
+    fetchEvents();
+
+    setEventForm({
+      title: "",
+      date: "",
+      time: "",
+      mode: "",
+      zoomLink: "",
+    });
+
+    setShowModal(false);
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("userType");
     navigate("/login");
   };
 
-  /* ================= FILTER USERS ================= */
+  // filter users
   const filteredUsers = users.filter((u) => {
     const matchSearch =
       u.name.toLowerCase().includes(search.toLowerCase()) ||
       u.email.toLowerCase().includes(search.toLowerCase());
 
-    const matchFilter = filter === "All" ? true : u.userType === filter;
+    const matchFilter =
+      filter === "All" ? true : u.userType === filter;
 
     return matchSearch && matchFilter;
   });
 
+  // EVENT STATUS
+  const getEventStatus = (event) => {
+    if (event.meetingCompleted) return "COMPLETED";
+    if (event.meetingLive) return "LIVE";
+    return "UPCOMING";
+  };
+
   return (
     <div className="admin-layout">
-
       {/* SIDEBAR */}
       <div className="sidebar">
         <h2>Admin Panel</h2>
@@ -194,20 +234,29 @@ function AdminDashboard() {
           <li onClick={() => setActiveTab("users")}>Users</li>
           <li onClick={() => setActiveTab("alumni")}>Alumni</li>
           <li onClick={() => setActiveTab("events")}>Events</li>
-          <li onClick={() => setActiveTab("roadmaps")}>Roadmaps</li>
-          <li onClick={() => setActiveTab("resources")}>Resources</li>
-          <li onClick={handleLogout} style={{ color: "red" }}>Logout</li>
+          <li onClick={handleLogout} style={{ color: "red" }}>
+            Logout
+          </li>
         </ul>
       </div>
 
       {/* MAIN */}
       <div className="main-content">
+        <h1>{activeTab.toUpperCase()}</h1>
 
         {/* USERS */}
         {activeTab === "users" && (
           <>
-            <input placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} />
-            <select value={filter} onChange={(e) => setFilter(e.target.value)}>
+            <input
+              placeholder="Search..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+
+            <select
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+            >
               <option value="All">All</option>
               <option value="Admin">Admin</option>
               <option value="User">User</option>
@@ -216,9 +265,14 @@ function AdminDashboard() {
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th>Name</th><th>Email</th><th>Phone</th><th>Type</th><th>Action</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>UserType</th>
+                  <th>Action</th>
                 </tr>
               </thead>
+
               <tbody>
                 {filteredUsers.map((u) => (
                   <tr key={u._id}>
@@ -227,7 +281,68 @@ function AdminDashboard() {
                     <td>{u.phone}</td>
                     <td>{u.userType}</td>
                     <td>
-                      <button onClick={() => deleteUser(u._id)}>Delete</button>
+                      <button onClick={() => handleEdit(u, "user")}>
+                        Edit
+                      </button>
+                      <button onClick={() => deleteUser(u._id)}>
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        )}
+
+        {/* ALUMNI */}
+        {activeTab === "alumni" && (
+          <>
+            <button
+              className="add-btn"
+              onClick={() => {
+                setShowModal(true);
+                setIsEdit(false);
+              }}
+            >
+              + Add Alumni
+            </button>
+
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Photo</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Company</th>
+                  <th>Position</th>
+                  <th>Year</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {alumni.map((a) => (
+                  <tr key={a._id}>
+                    <td>
+                      <img
+                        src={`http://localhost:5000/uploads/${a.photo}`}
+                        width="50"
+                        alt=""
+                      />
+                    </td>
+                    <td>{a.name}</td>
+                    <td>{a.email}</td>
+                    <td>{a.company}</td>
+                    <td>{a.position}</td>
+                    <td>{a.year}</td>
+                    <td>
+                      <button onClick={() => handleEdit(a, "alumni")}>
+                        Edit
+                      </button>
+                      <button onClick={() => deleteAlumni(a._id)}>
+                        Delete
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -238,69 +353,206 @@ function AdminDashboard() {
 
         {/* EVENTS */}
         {activeTab === "events" && (
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>Title</th><th>Date</th><th>Time</th><th>Mode</th><th>Status</th><th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {events.map((e) => {
-                const status = getEventStatus(e.date, e.time);
-                return (
+          <>
+            <button
+              className="add-btn"
+              onClick={() => {
+                setShowModal(true);
+                setIsEdit(false);
+              }}
+            >
+              + Add Event
+            </button>
+
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Mode</th>
+                  <th>Status</th>
+                  <th>Meeting</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {events.map((e) => (
                   <tr key={e._id}>
                     <td>{e.title}</td>
                     <td>{e.date}</td>
                     <td>{e.time}</td>
                     <td>{e.mode}</td>
-                    <td>{status}</td>
+
                     <td>
-                      <button onClick={() => viewStudents(e._id)}>Students</button>
-                      <button onClick={() => deleteEvent(e._id)}>Delete</button>
+                      {getEventStatus(e)}
+                    </td>
+
+                    <td>
+                      {e.mode === "Online" ? (
+                        getEventStatus(e) === "LIVE" ? (
+                          <a href={e.zoomLink} target="_blank">
+                            <button style={{ background: "green", color: "#fff" }}>
+                              Join
+                            </button>
+                          </a>
+                        ) : getEventStatus(e) === "COMPLETED" ? (
+                          <button disabled>Completed</button>
+                        ) : (
+                          <button disabled>Not Live</button>
+                        )
+                      ) : (
+                        "-"
+                      )}
+                    </td>
+
+                    <td>
+                      <button onClick={() => handleEdit(e, "event")}>
+                        Edit
+                      </button>
+                      <button onClick={() => deleteEvent(e._id)}>
+                        Delete
+                      </button>
+                      <button onClick={() => viewStudents(e._id)}>
+                        Students
+                      </button>
                     </td>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                ))}
+              </tbody>
+            </table>
+          </>
         )}
-
-        {/* ROADMAPS */}
-        {activeTab === "roadmaps" && (
-          <table className="admin-table">
-            <tbody>
-              {roadmaps.map((r) => (
-                <tr key={r._id}>
-                  <td>{r.role}</td>
-                  <td>{r.company}</td>
-                  <td>{r.category}</td>
-                  <td>
-                    <button onClick={() => deleteRoadmap(r._id)}>Delete</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-
-        {/* RESOURCES */}
-        {activeTab === "resources" && (
-          <table className="admin-table">
-            <tbody>
-              {resources.map((r) => (
-                <tr key={r._id}>
-                  <td>{r.title}</td>
-                  <td>{r.type}</td>
-                  <td>
-                    <button onClick={() => deleteResource(r._id)}>Delete</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-
       </div>
+
+      {/* STUDENTS MODAL */}
+      {showStudents && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h2>Registered Students</h2>
+
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {students.map((s) => (
+                  <tr key={s._id}>
+                    <td>{s.name}</td>
+                    <td>{s.email}</td>
+                    <td>{s.phone}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            <button onClick={() => setShowStudents(false)}>Close</button>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL */}
+      {showModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h2>{isEdit ? "Edit" : "Add"}</h2>
+
+            {activeTab === "users" && (
+              <>
+                <input
+                  value={userForm.name}
+                  onChange={(e) =>
+                    setUserForm({ ...userForm, name: e.target.value })
+                  }
+                />
+                <button onClick={updateUser}>Save</button>
+              </>
+            )}
+
+            {activeTab === "alumni" && (
+              <form onSubmit={saveAlumni}>
+                <input
+                  placeholder="Name"
+                  value={alumniForm.name}
+                  onChange={(e) =>
+                    setAlumniForm({ ...alumniForm, name: e.target.value })
+                  }
+                />
+                <input
+                  placeholder="Email"
+                  value={alumniForm.email}
+                  onChange={(e) =>
+                    setAlumniForm({ ...alumniForm, email: e.target.value })
+                  }
+                />
+                <button type="submit">Save</button>
+              </form>
+            )}
+
+            {activeTab === "events" && (
+              <>
+                <input
+                  placeholder="Title"
+                  value={eventForm.title}
+                  onChange={(e) =>
+                    setEventForm({ ...eventForm, title: e.target.value })
+                  }
+                />
+
+                <input
+                  type="date"
+                  value={eventForm.date}
+                  onChange={(e) =>
+                    setEventForm({ ...eventForm, date: e.target.value })
+                  }
+                />
+
+                <input
+                  type="time"
+                  value={eventForm.time}
+                  onChange={(e) =>
+                    setEventForm({ ...eventForm, time: e.target.value })
+                  }
+                />
+
+                <select
+                  value={eventForm.mode}
+                  onChange={(e) =>
+                    setEventForm({ ...eventForm, mode: e.target.value })
+                  }
+                >
+                  <option value="">Select Mode</option>
+                  <option value="Online">Online</option>
+                  <option value="Offline">Offline</option>
+                </select>
+
+                {eventForm.mode === "Online" && (
+                  <input
+                    placeholder="Zoom Link"
+                    value={eventForm.zoomLink}
+                    onChange={(e) =>
+                      setEventForm({
+                        ...eventForm,
+                        zoomLink: e.target.value,
+                      })
+                    }
+                  />
+                )}
+
+                <button onClick={saveEvent}>Save</button>
+              </>
+            )}
+
+            <button onClick={() => setShowModal(false)}>Cancel</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

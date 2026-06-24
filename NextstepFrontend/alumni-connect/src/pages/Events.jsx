@@ -5,11 +5,9 @@ import "./events.css";
 function Events() {
   const [events, setEvents] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
+
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [selectedEventId, setSelectedEventId] = useState("");
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
 
   const [formData, setFormData] = useState({
     name: "",
@@ -20,10 +18,7 @@ function Events() {
   /* ================= FETCH EVENTS ================= */
   const fetchEvents = async () => {
     try {
-      const res = await fetch(
-        "https://nextstep-project-1.onrender.com/getEvents"
-      );
-
+      const res = await fetch("http://localhost:5000/getEvents");
       const data = await res.json();
 
       if (data.status === "ok") {
@@ -37,12 +32,6 @@ function Events() {
   useEffect(() => {
     fetchEvents();
   }, []);
-
-  /* ================= PAGINATION ================= */
-  const lastIndex = currentPage * itemsPerPage;
-  const firstIndex = lastIndex - itemsPerPage;
-  const currentItems = events.slice(firstIndex, lastIndex);
-  const totalPages = Math.ceil(events.length / itemsPerPage);
 
   /* ================= OPEN POPUP ================= */
   const openPopup = (event) => {
@@ -59,37 +48,32 @@ function Events() {
     });
   };
 
-  /* ================= REGISTER EVENT ================= */
+  /* ================= REGISTER ================= */
   const handleRegister = async (e) => {
     e.preventDefault();
 
     try {
-      const res = await fetch(
-        "https://nextstep-project-1.onrender.com/registerEvent",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            eventId: selectedEventId,
-            eventTitle: selectedEvent?.title,
-            date: selectedEvent?.date,
-            time: selectedEvent?.time,
-            zoomLink: selectedEvent?.zoomLink,
-
-            name: formData.name,
-            email: formData.email,
-            phone: formData.phone,
-          }),
-        }
-      );
+      const res = await fetch("http://localhost:5000/registerEvent", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          eventId: selectedEventId,
+          eventTitle: selectedEvent?.title,
+          date: selectedEvent?.date,
+          time: selectedEvent?.time,
+          zoomLink: selectedEvent?.zoomLink,
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+        }),
+      });
 
       const data = await res.json();
 
       if (data.status === "ok") {
         alert("Registered Successfully ✅");
-
         setShowPopup(false);
         setFormData({ name: "", email: "", phone: "" });
       } else {
@@ -101,6 +85,18 @@ function Events() {
     }
   };
 
+  /* ================= EVENT STATUS ================= */
+  const getEventStatus = (event) => {
+    const now = new Date();
+    const start = new Date(`${event.date}T${event.time}`);
+    const end = new Date(start);
+    end.setHours(end.getHours() + 1);
+
+    if (now >= start && now < end) return "LIVE";
+    if (now >= end) return "COMPLETED";
+    return "UPCOMING";
+  };
+
   return (
     <>
       <Navbar />
@@ -109,28 +105,47 @@ function Events() {
         <h1>Upcoming Tech Events 🚀</h1>
       </div>
 
-      {/* EVENTS */}
       <div className="events-container">
         {events.length > 0 ? (
-          currentItems.map((event) => (
-            <div className="event-card" key={event._id}>
-              <h3>{event.title}</h3>
+          events.map((event) => {
+            const status = getEventStatus(event);
 
-              <p>📅 Date: {event.date}</p>
-              <p>⏰ Time: {event.time}</p>
-              <p>📍 Mode: {event.mode}</p>
+            return (
+              <div className="event-card" key={event._id}>
+                <h3>{event.title}</h3>
 
-              {event.meetingCompleted ? null : event.meetingLive ? (
-                <a href={event.zoomLink} target="_blank" rel="noreferrer">
-                  <button>Join Now</button>
-                </a>
-              ) : (
-                <button onClick={() => openPopup(event)}>
-                  Register
-                </button>
-              )}
-            </div>
-          ))
+                <p>📅 Date: {event.date}</p>
+                <p>⏰ Time: {new Date(`1970-01-01T${event.time}`).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: true,
+                    })}</p>
+                <p>📍 Mode: {event.mode}</p>
+
+                {/* ================= STATUS BUTTONS ================= */}
+
+                {status === "UPCOMING" && (
+                  <button onClick={() => openPopup(event)}>
+                    Register
+                  </button>
+                )}
+
+                {status === "LIVE" && (
+                  <a href={event.zoomLink} target="_blank" rel="noreferrer">
+                    <button style={{ background: "green", color: "white" }}>
+                      🔴 Join Now
+                    </button>
+                  </a>
+                )}
+
+                {status === "COMPLETED" && (
+                  <button disabled style={{ background: "gray", color: "white" }}>
+                    ✅ Completed
+                  </button>
+                )}
+              </div>
+            );
+          })
         ) : (
           <h2 style={{ textAlign: "center", width: "100%" }}>
             No Events Found
@@ -138,38 +153,12 @@ function Events() {
         )}
       </div>
 
-      {/* PAGINATION */}
-      <div className="pagination">
-        <button
-          disabled={currentPage === 1}
-          onClick={() => setCurrentPage(currentPage - 1)}
-        >
-          Prev
-        </button>
-
-        {[...Array(totalPages)].map((_, index) => (
-          <button
-            key={index}
-            className={currentPage === index + 1 ? "active-page" : ""}
-            onClick={() => setCurrentPage(index + 1)}
-          >
-            {index + 1}
-          </button>
-        ))}
-
-        <button
-          disabled={currentPage === totalPages}
-          onClick={() => setCurrentPage(currentPage + 1)}
-        >
-          Next
-        </button>
-      </div>
-
-      {/* POPUP */}
+      {/* ================= POPUP ================= */}
       {showPopup && (
         <div className="popup-overlay">
           <div className="popup-box">
             <h2>Register Event</h2>
+
             <h3>{selectedEvent?.title}</h3>
 
             <form onSubmit={handleRegister}>
@@ -202,7 +191,11 @@ function Events() {
 
               <div className="popup-btns">
                 <button type="submit">Submit</button>
-                <button type="button" onClick={() => setShowPopup(false)}>
+
+                <button
+                  type="button"
+                  onClick={() => setShowPopup(false)}
+                >
                   Cancel
                 </button>
               </div>
