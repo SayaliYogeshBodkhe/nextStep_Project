@@ -7,31 +7,29 @@ function Roadmap() {
   const [roadmaps, setRoadmaps] = useState([]);
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
-  const [currentPage, setCurrentPage] =
-  useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
 
-const itemsPerPage = 6;
   const navigate = useNavigate();
+  const itemsPerPage = 6;
 
-  /* ================= FETCH ROADMAPS ================= */
   useEffect(() => {
     fetchRoadmaps();
   }, []);
 
   const fetchRoadmaps = async () => {
     try {
-      const res = await fetch("https://nextstep-project-1.onrender.com/getRoadmaps");
+      const res = await fetch("http://localhost:5000/getRoadmaps");
       const data = await res.json();
 
       if (data.status === "ok") {
         setRoadmaps(data.data);
       }
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log("Fetch roadmap error:", error);
     }
   };
 
-  /* ================= FILTER ================= */
+  // Filter
   const filtered = roadmaps.filter((r) => {
     const matchSearch =
       (r.role || "").toLowerCase().includes(search.toLowerCase()) ||
@@ -42,23 +40,14 @@ const itemsPerPage = 6;
 
     return matchSearch && matchCategory;
   });
-  const lastIndex =
-  currentPage * itemsPerPage;
 
-const firstIndex =
-  lastIndex - itemsPerPage;
+  // Pagination
+  const lastIndex = currentPage * itemsPerPage;
+  const firstIndex = lastIndex - itemsPerPage;
+  const currentItems = filtered.slice(firstIndex, lastIndex);
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
 
-const currentItems =
-  filtered.slice(
-    firstIndex,
-    lastIndex
-  );
-
-const totalPages = Math.ceil(
-  filtered.length / itemsPerPage
-);
-
-  /* ================= UNIQUE CATEGORIES ================= */
+  // Categories
   const categories = [
     "All",
     ...new Set(roadmaps.map((r) => r.category).filter(Boolean)),
@@ -68,117 +57,112 @@ const totalPages = Math.ceil(
     <>
       <Navbar />
 
-      {/* HEADER */}
       <div className="roadmap-header">
         <h1>Career Roadmaps</h1>
         <p>Step-by-step paths to your dream job</p>
       </div>
 
-      {/* SEARCH */}
+      {/* Search */}
       <div className="roadmap-search">
         <input
           type="text"
           placeholder="Search role or company..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setCurrentPage(1);
+          }}
         />
       </div>
 
-      {/* CATEGORY FILTER */}
+      {/* Category Filter */}
       <div className="category-bar">
         {categories.map((cat, i) => (
           <button
             key={i}
             className={activeCategory === cat ? "active-chip" : ""}
-            onClick={() => setActiveCategory(cat)}
+            onClick={() => {
+              setActiveCategory(cat);
+              setCurrentPage(1);
+            }}
           >
             {cat}
           </button>
         ))}
       </div>
 
-      {/* ROADMAP GRID */}
+      {/* Grid */}
       <div className="roadmap-grid">
-        {currentItems.map((item) => (
-          <div className="roadmap-card" key={item._id}>
-
-            {/* HEADER */}
-            <div className="card-top">
-              <img src={item.icon} alt="icon" />
-              <div>
-                <h3>{item.role}</h3>
-                <p>{item.company}</p>
-              </div>
-            </div>
-
-            {/* META */}
-            <div className="meta">
-              <span>{item.location}</span>
-              <span>{item.year}</span>
-              <span>{item.category}</span>
-            </div>
-
-            {/* STEPS PREVIEW */}
-            <div className="steps">
-              {item.steps?.slice(0, 3).map((step, index) => (
-                <div className="step" key={index}>
-                  <div className="circle">{index + 1}</div>
-                  <p>{step}</p>
+        {currentItems.length > 0 ? (
+          currentItems.map((item) => (
+            <div className="roadmap-card" key={item._id}>
+              <div className="card-top">
+                <img
+                  src={item.icon || "https://via.placeholder.com/60"}
+                  alt="icon"
+                />
+                <div>
+                  <h3>{item.role}</h3>
+                  <p>{item.company}</p>
                 </div>
-              ))}
+              </div>
+
+              <div className="meta">
+                <span>{item.location}</span>
+                <span>{item.year}</span>
+                <span>{item.category}</span>
+              </div>
+
+              <div className="steps">
+                {item.steps?.slice(0, 3).map((step, index) => (
+                  <div className="step" key={index}>
+                    <div className="circle">{index + 1}</div>
+                    <p>{step}</p>
+                  </div>
+                ))}
+              </div>
+
+              <button
+                className="learn-btn"
+                onClick={() => navigate(`/roadmap/${item._id}`)}
+              >
+                View Full Roadmap
+              </button>
             </div>
-
-            <button
-              className="learn-btn"
-              onClick={() => navigate(`/roadmap/${item._id}`)}
-            >
-              View Full Roadmap
-            </button>
-
-          </div>
-        ))}
+          ))
+        ) : (
+          <h3>No Roadmaps Found</h3>
+        )}
       </div>
-      <div className="pagination">
 
-  <button
-    disabled={currentPage === 1}
-    onClick={() =>
-      setCurrentPage(currentPage - 1)
-    }
-  >
-    Prev
-  </button>
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="pagination">
+          <button
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage(currentPage - 1)}
+          >
+            Prev
+          </button>
 
-  {[...Array(totalPages)].map(
-    (_, index) => (
-      <button
-        key={index}
-        className={
-          currentPage === index + 1
-            ? "active-page"
-            : ""
-        }
-        onClick={() =>
-          setCurrentPage(index + 1)
-        }
-      >
-        {index + 1}
-      </button>
-    )
-  )}
+          {[...Array(totalPages)].map((_, index) => (
+            <button
+              key={index}
+              className={currentPage === index + 1 ? "active-page" : ""}
+              onClick={() => setCurrentPage(index + 1)}
+            >
+              {index + 1}
+            </button>
+          ))}
 
-  <button
-    disabled={
-      currentPage === totalPages
-    }
-    onClick={() =>
-      setCurrentPage(currentPage + 1)
-    }
-  >
-    Next
-  </button>
-
-</div>
+          <button
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage(currentPage + 1)}
+          >
+            Next
+          </button>
+        </div>
+      )}
     </>
   );
 }

@@ -15,7 +15,7 @@ import Login from "./pages/Login";
 import SingleProfile from "./pages/SingleProfile";
 import Signup from "./pages/Signup";
 import AdminDashboard from "./pages/AdminDashboard";
-import RoadmapDetails from "./pages/RoadmapDetails";
+import RoadmapDetails from "./pages/RoadmapDetail";
 
 /* Protected Routes */
 import ProtectedRoute from "./components/ProtectedRoute";
