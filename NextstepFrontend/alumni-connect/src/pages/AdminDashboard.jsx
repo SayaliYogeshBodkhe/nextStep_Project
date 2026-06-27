@@ -5,10 +5,12 @@ import { useNavigate } from "react-router-dom";
 function AdminDashboard() {
   const navigate = useNavigate();
 
+  // STATES
   const [users, setUsers] = useState([]);
   const [alumni, setAlumni] = useState([]);
   const [events, setEvents] = useState([]);
   const [roadmaps, setRoadmaps] = useState([]);
+  const [resources, setResources] = useState([]);
   const [students, setStudents] = useState([]);
 
   const [showStudents, setShowStudents] = useState(false);
@@ -20,6 +22,7 @@ function AdminDashboard() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("All");
 
+  // USER FORM
   const [userForm, setUserForm] = useState({
     name: "",
     email: "",
@@ -27,6 +30,7 @@ function AdminDashboard() {
     userType: "User",
   });
 
+  // ALUMNI FORM
   const [alumniForm, setAlumniForm] = useState({
     name: "",
     email: "",
@@ -36,6 +40,7 @@ function AdminDashboard() {
     photo: null,
   });
 
+  // EVENT FORM
   const [eventForm, setEventForm] = useState({
     title: "",
     date: "",
@@ -44,6 +49,7 @@ function AdminDashboard() {
     zoomLink: "",
   });
 
+  // ROADMAP FORM
   const [roadmapForm, setRoadmapForm] = useState({
     role: "",
     company: "",
@@ -54,43 +60,88 @@ function AdminDashboard() {
     steps: [],
   });
 
+  // RESOURCE FORM
+  const [resourceForm, setResourceForm] = useState({
+    title: "",
+    description: "",
+    category: "",
+    type: "",
+    difficulty: "",
+    thumbnail: "",
+    link: "",
+    tags: [],
+  });
+
+  // AUTH CHECK
   useEffect(() => {
     const role = localStorage.getItem("userType");
-    if (!role) navigate("/login");
-    else if (role !== "Admin") navigate("/");
+
+    if (!role) {
+      navigate("/login");
+    } else if (role !== "Admin") {
+      navigate("/");
+    }
   }, [navigate]);
 
+  // INITIAL LOAD
   useEffect(() => {
     fetchUsers();
     fetchAlumni();
     fetchEvents();
     fetchRoadmaps();
+    fetchResources();
   }, []);
 
+  // FETCH USERS
   const fetchUsers = async () => {
     const res = await fetch("http://localhost:5000/getUsers");
     const data = await res.json();
-    if (data.status === "ok") setUsers(data.data);
+
+    if (data.status === "ok") {
+      setUsers(data.data);
+    }
   };
 
+  // FETCH ALUMNI
   const fetchAlumni = async () => {
     const res = await fetch("http://localhost:5000/getAlumni");
     const data = await res.json();
-    if (data.status === "ok") setAlumni(data.data);
+
+    if (data.status === "ok") {
+      setAlumni(data.data);
+    }
   };
 
+  // FETCH EVENTS
   const fetchEvents = async () => {
     const res = await fetch("http://localhost:5000/getEvents");
     const data = await res.json();
-    if (data.status === "ok") setEvents(data.data);
+
+    if (data.status === "ok") {
+      setEvents(data.data);
+    }
   };
 
+  // FETCH ROADMAPS
   const fetchRoadmaps = async () => {
     const res = await fetch("http://localhost:5000/getRoadmaps");
     const data = await res.json();
-    if (data.status === "ok") setRoadmaps(data.data);
+
+    if (data.status === "ok") {
+      setRoadmaps(data.data);
+    }
   };
 
+  // FETCH RESOURCES
+  const fetchResources = async () => {
+    const res = await fetch("http://localhost:5000/getResources");
+    const data = await res.json();
+
+    if (data.status === "ok") {
+      setResources(data.data);
+    }
+  };
+    // DELETE FUNCTIONS
   const deleteUser = async (id) => {
     await fetch(`http://localhost:5000/deleteUser/${id}`, {
       method: "DELETE",
@@ -119,55 +170,14 @@ function AdminDashboard() {
     fetchRoadmaps();
   };
 
-  const handleEdit = (data, type) => {
-    setShowModal(true);
-    setIsEdit(true);
-    setEditId(data._id);
-
-    if (type === "user") setUserForm(data);
-    if (type === "alumni") setAlumniForm({ ...data, photo: null });
-    if (type === "event") setEventForm(data);
-    if (type === "roadmap") setRoadmapForm(data);
-  };
-
-  const updateUser = async () => {
-    await fetch(`http://localhost:5000/updateUser/${editId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(userForm),
+  const deleteResource = async (id) => {
+    await fetch(`http://localhost:5000/deleteResource/${id}`, {
+      method: "DELETE",
     });
-
-    fetchUsers();
-    setShowModal(false);
+    fetchResources();
   };
 
-  const saveAlumni = async (e) => {
-    e.preventDefault();
-
-    const formData = new FormData();
-    formData.append("name", alumniForm.name);
-    formData.append("email", alumniForm.email);
-    formData.append("company", alumniForm.company);
-    formData.append("position", alumniForm.position);
-    formData.append("year", alumniForm.year);
-
-    if (alumniForm.photo) {
-      formData.append("photo", alumniForm.photo);
-    }
-
-    const url = isEdit
-      ? `http://localhost:5000/updateAlumni/${editId}`
-      : "http://localhost:5000/addAlumni";
-
-    await fetch(url, {
-      method: isEdit ? "PUT" : "POST",
-      body: formData,
-    });
-
-    fetchAlumni();
-    setShowModal(false);
-  };
-
+  // SAVE EVENT
   const saveEvent = async () => {
     const url = isEdit
       ? `http://localhost:5000/updateEvent/${editId}`
@@ -183,6 +193,7 @@ function AdminDashboard() {
     setShowModal(false);
   };
 
+  // SAVE ROADMAP
   const saveRoadmap = async () => {
     const url = isEdit
       ? `http://localhost:5000/updateRoadmap/${editId}`
@@ -198,11 +209,53 @@ function AdminDashboard() {
     setShowModal(false);
   };
 
+  // SAVE RESOURCE
+  const saveResource = async () => {
+    const url = isEdit
+      ? `http://localhost:5000/updateResource/${editId}`
+      : "http://localhost:5000/addResource";
+
+    await fetch(url, {
+      method: isEdit ? "PUT" : "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(resourceForm),
+    });
+
+    fetchResources();
+    setShowModal(false);
+  };
+
+  // UPDATE USER
+  const updateUser = async () => {
+    await fetch(`http://localhost:5000/updateUser/${editId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(userForm),
+    });
+
+    fetchUsers();
+    setShowModal(false);
+  };
+
+  // LOGOUT
   const handleLogout = () => {
     localStorage.removeItem("userType");
     navigate("/login");
   };
 
+  // EDIT HANDLER
+  const handleEdit = (data, type) => {
+    setShowModal(true);
+    setIsEdit(true);
+    setEditId(data._id);
+
+    if (type === "user") setUserForm(data);
+    if (type === "event") setEventForm(data);
+    if (type === "roadmap") setRoadmapForm(data);
+    if (type === "resource") setResourceForm(data);
+  };
+
+  // FILTER USERS
   const filteredUsers = users.filter((u) => {
     const matchSearch =
       u.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -214,36 +267,36 @@ function AdminDashboard() {
     return matchSearch && matchFilter;
   });
 
+  // EVENT STATUS
   const getEventStatus = (event) => {
     if (event.meetingCompleted) return "COMPLETED";
     if (event.meetingLive) return "LIVE";
     return "UPCOMING";
   };
 
+  // VIEW STUDENTS
   const viewStudents = async (id) => {
-    try {
-      const res = await fetch(
-        `http://localhost:5000/getEventStudents/${id}`
-      );
-      const data = await res.json();
+    const res = await fetch(
+      `http://localhost:5000/getEventStudents/${id}`
+    );
 
-      if (data.status === "ok") {
-        setStudents(data.data);
-        setShowStudents(true);
-      }
-    } catch (error) {
-      console.log(error);
+    const data = await res.json();
+
+    if (data.status === "ok") {
+      setStudents(data.data);
+      setShowStudents(true);
     }
   };
+
   return (
-    <div className="admin-layout">
+        <div className="admin-layout">
       <div className="sidebar">
         <h2>Admin Panel</h2>
         <ul>
           <li onClick={() => setActiveTab("users")}>Users</li>
-          <li onClick={() => setActiveTab("alumni")}>Alumni</li>
           <li onClick={() => setActiveTab("events")}>Events</li>
           <li onClick={() => setActiveTab("roadmaps")}>Roadmaps</li>
+          <li onClick={() => setActiveTab("resources")}>Resources</li>
           <li onClick={handleLogout} style={{ color: "red" }}>
             Logout
           </li>
@@ -253,6 +306,7 @@ function AdminDashboard() {
       <div className="main-content">
         <h1>{activeTab.toUpperCase()}</h1>
 
+        {/* USERS */}
         {activeTab === "users" && (
           <>
             <input
@@ -293,41 +347,7 @@ function AdminDashboard() {
           </>
         )}
 
-        {activeTab === "alumni" && (
-          <>
-            <button
-              className="add-btn"
-              onClick={() => {
-                setShowModal(true);
-                setIsEdit(false);
-              }}
-            >
-              + Add Alumni
-            </button>
-
-            <table className="admin-table">
-              <tbody>
-                {alumni.map((a) => (
-                  <tr key={a._id}>
-                    <td>{a.name}</td>
-                    <td>{a.email}</td>
-                    <td>{a.company}</td>
-                    <td>{a.position}</td>
-                    <td>{a.year}</td>
-                    <td>
-                      <button onClick={() => handleEdit(a, "alumni")}>
-                        Edit
-                      </button>
-                      <button onClick={() => deleteAlumni(a._id)}>
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </>
-        )}        {/* EVENTS */}
+        {/* EVENTS */}
         {activeTab === "events" && (
           <>
             <button
@@ -341,16 +361,6 @@ function AdminDashboard() {
             </button>
 
             <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>Title</th>
-                  <th>Date</th>
-                  <th>Time</th>
-                  <th>Mode</th>
-                  <th>Status</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
               <tbody>
                 {events.map((e) => (
                   <tr key={e._id}>
@@ -400,17 +410,6 @@ function AdminDashboard() {
             </button>
 
             <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>Role</th>
-                  <th>Company</th>
-                  <th>Category</th>
-                  <th>Location</th>
-                  <th>Year</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-
               <tbody>
                 {roadmaps.map((r) => (
                   <tr key={r._id}>
@@ -433,22 +432,60 @@ function AdminDashboard() {
             </table>
           </>
         )}
-      </div>
 
-      {/* STUDENTS MODAL */}
+        {/* RESOURCES */}
+        {activeTab === "resources" && (
+          <>
+            <button
+              className="add-btn"
+              onClick={() => {
+                setShowModal(true);
+                setIsEdit(false);
+                setResourceForm({
+                  title: "",
+                  description: "",
+                  category: "",
+                  type: "",
+                  difficulty: "",
+                  thumbnail: "",
+                  link: "",
+                  tags: [],
+                });
+              }}
+            >
+              + Add Resource
+            </button>
+
+            <table className="admin-table">
+              <tbody>
+                {resources.map((r) => (
+                  <tr key={r._id}>
+                    <td>{r.title}</td>
+                    <td>{r.category}</td>
+                    <td>{r.type}</td>
+                    <td>{r.difficulty}</td>
+                    <td>
+                      <button onClick={() => handleEdit(r, "resource")}>
+                        Edit
+                      </button>
+                      <button onClick={() => deleteResource(r._id)}>
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        )}
+      </div>
+            {/* STUDENTS MODAL */}
       {showStudents && (
         <div className="modal-overlay">
           <div className="modal">
             <h2>Registered Students</h2>
 
             <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Phone</th>
-                </tr>
-              </thead>
               <tbody>
                 {students.map((s) => (
                   <tr key={s._id}>
@@ -460,7 +497,9 @@ function AdminDashboard() {
               </tbody>
             </table>
 
-            <button onClick={() => setShowStudents(false)}>Close</button>
+            <button onClick={() => setShowStudents(false)}>
+              Close
+            </button>
           </div>
         </div>
       )}
@@ -471,20 +510,23 @@ function AdminDashboard() {
           <div className="modal">
             <h2>{isEdit ? "Edit" : "Add"}</h2>
 
-            {/* USER FORM */}
+            {/* USER */}
             {activeTab === "users" && (
               <>
                 <input
                   value={userForm.name}
                   onChange={(e) =>
-                    setUserForm({ ...userForm, name: e.target.value })
+                    setUserForm({
+                      ...userForm,
+                      name: e.target.value,
+                    })
                   }
                 />
                 <button onClick={updateUser}>Save</button>
               </>
             )}
 
-            {/* EVENT FORM */}
+            {/* EVENT */}
             {activeTab === "events" && (
               <>
                 <input
@@ -534,24 +576,11 @@ function AdminDashboard() {
                   <option value="Offline">Offline</option>
                 </select>
 
-                {eventForm.mode === "Online" && (
-                  <input
-                    placeholder="Zoom Link"
-                    value={eventForm.zoomLink}
-                    onChange={(e) =>
-                      setEventForm({
-                        ...eventForm,
-                        zoomLink: e.target.value,
-                      })
-                    }
-                  />
-                )}
-
                 <button onClick={saveEvent}>Save</button>
               </>
             )}
 
-            {/* ROADMAP FORM */}
+            {/* ROADMAP */}
             {activeTab === "roadmaps" && (
               <>
                 <input
@@ -576,52 +605,8 @@ function AdminDashboard() {
                   }
                 />
 
-                <input
-                  placeholder="Category"
-                  value={roadmapForm.category}
-                  onChange={(e) =>
-                    setRoadmapForm({
-                      ...roadmapForm,
-                      category: e.target.value,
-                    })
-                  }
-                />
-
-                <input
-                  placeholder="Location"
-                  value={roadmapForm.location}
-                  onChange={(e) =>
-                    setRoadmapForm({
-                      ...roadmapForm,
-                      location: e.target.value,
-                    })
-                  }
-                />
-
-                <input
-                  placeholder="Year"
-                  value={roadmapForm.year}
-                  onChange={(e) =>
-                    setRoadmapForm({
-                      ...roadmapForm,
-                      year: e.target.value,
-                    })
-                  }
-                />
-
-                <input
-                  placeholder="Icon URL"
-                  value={roadmapForm.icon}
-                  onChange={(e) =>
-                    setRoadmapForm({
-                      ...roadmapForm,
-                      icon: e.target.value,
-                    })
-                  }
-                />
-
                 <textarea
-                  placeholder="Steps (one per line)"
+                  placeholder="Steps"
                   value={roadmapForm.steps.join("\n")}
                   onChange={(e) =>
                     setRoadmapForm({
@@ -635,7 +620,104 @@ function AdminDashboard() {
               </>
             )}
 
-            <button onClick={() => setShowModal(false)}>Cancel</button>
+            {/* RESOURCE */}
+            {activeTab === "resources" && (
+              <>
+                <input
+                  placeholder="Title"
+                  value={resourceForm.title}
+                  onChange={(e) =>
+                    setResourceForm({
+                      ...resourceForm,
+                      title: e.target.value,
+                    })
+                  }
+                />
+
+                <textarea
+                  placeholder="Description"
+                  value={resourceForm.description}
+                  onChange={(e) =>
+                    setResourceForm({
+                      ...resourceForm,
+                      description: e.target.value,
+                    })
+                  }
+                />
+
+                <input
+                  placeholder="Category"
+                  value={resourceForm.category}
+                  onChange={(e) =>
+                    setResourceForm({
+                      ...resourceForm,
+                      category: e.target.value,
+                    })
+                  }
+                />
+
+                <input
+                  placeholder="Type"
+                  value={resourceForm.type}
+                  onChange={(e) =>
+                    setResourceForm({
+                      ...resourceForm,
+                      type: e.target.value,
+                    })
+                  }
+                />
+
+                <input
+                  placeholder="Difficulty"
+                  value={resourceForm.difficulty}
+                  onChange={(e) =>
+                    setResourceForm({
+                      ...resourceForm,
+                      difficulty: e.target.value,
+                    })
+                  }
+                />
+
+                <input
+                  placeholder="Thumbnail URL"
+                  value={resourceForm.thumbnail}
+                  onChange={(e) =>
+                    setResourceForm({
+                      ...resourceForm,
+                      thumbnail: e.target.value,
+                    })
+                  }
+                />
+
+                <input
+                  placeholder="Resource Link"
+                  value={resourceForm.link}
+                  onChange={(e) =>
+                    setResourceForm({
+                      ...resourceForm,
+                      link: e.target.value,
+                    })
+                  }
+                />
+
+                <input
+                  placeholder="Tags (comma separated)"
+                  value={resourceForm.tags.join(",")}
+                  onChange={(e) =>
+                    setResourceForm({
+                      ...resourceForm,
+                      tags: e.target.value.split(","),
+                    })
+                  }
+                />
+
+                <button onClick={saveResource}>Save</button>
+              </>
+            )}
+
+            <button onClick={() => setShowModal(false)}>
+              Cancel
+            </button>
           </div>
         </div>
       )}
