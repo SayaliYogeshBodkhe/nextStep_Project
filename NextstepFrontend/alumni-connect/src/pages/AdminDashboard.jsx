@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import "./adminDashboard.css";
 import { useNavigate } from "react-router-dom";
-
 function AdminDashboard() {
   const navigate = useNavigate();
-
+  
   // STATES
   const [users, setUsers] = useState([]);
   const [alumni, setAlumni] = useState([]);
@@ -177,6 +176,32 @@ function AdminDashboard() {
     fetchResources();
   };
 
+  //SAVE ALUMNI
+  const saveAlumni = async () => {
+  const url = isEdit
+    ? `http://localhost:5000/updateAlumni/${editId}`
+    : "http://localhost:5000/addAlumni";
+
+  const formData = new FormData();
+
+  formData.append("name", alumniForm.name);
+  formData.append("email", alumniForm.email);
+  formData.append("company", alumniForm.company);
+  formData.append("position", alumniForm.position);
+  formData.append("year", alumniForm.year);
+
+  if (alumniForm.photo) {
+    formData.append("photo", alumniForm.photo);
+  }
+
+  await fetch(url, {
+    method: isEdit ? "PUT" : "POST",
+    body: formData,
+  });
+
+  fetchAlumni();
+  setShowModal(false);
+};
   // SAVE EVENT
   const saveEvent = async () => {
     const url = isEdit
@@ -294,6 +319,7 @@ function AdminDashboard() {
         <h2>Admin Panel</h2>
         <ul>
           <li onClick={() => setActiveTab("users")}>Users</li>
+          <li onClick={()=> setActiveTab("alumni")}>Alumni</li>
           <li onClick={() => setActiveTab("events")}>Events</li>
           <li onClick={() => setActiveTab("roadmaps")}>Roadmaps</li>
           <li onClick={() => setActiveTab("resources")}>Resources</li>
@@ -346,7 +372,63 @@ function AdminDashboard() {
             </table>
           </>
         )}
+        {/* ================= ALUMNI ================= */}
+        {activeTab === "alumni" && (
+          <>
+            <button
+              className="add-btn"
+              onClick={() => {
+                setShowModal(true);
+                setIsEdit(false);
+                setAlumniForm({
+                  name: "",
+                  email: "",
+                  company: "",
+                  position: "",
+                  year: "",
+                  photo: null,
+                });
+              }}
+            >
+              + Add Alumni
+            </button>
 
+            <table className="admin-table">
+              <tbody>
+                {alumni.map((a) => (
+                  <tr key={a._id}>
+                    <td>
+                      {a.photo && (
+                        <img
+                          src={`http://localhost:5000/uploads/${a.photo}`}
+                          alt="alumni"
+                          width="60"
+                          height="60"
+                          style={{ borderRadius: "50%" }}
+                        />
+                      )}
+                    </td>
+                    <td>{a.name}</td>
+                    <td>{a.email}</td>
+                    <td>{a.company}</td>
+                    <td>{a.position}</td>
+                    <td>{a.year}</td>
+
+                    <td>
+                      <button onClick={() => handleEdit(a, "alumni")}>
+                        Edit
+                      </button>
+
+                      <button onClick={() => deleteAlumni(a._id)}>
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        )}
         {/* EVENTS */}
         {activeTab === "events" && (
           <>
@@ -526,6 +608,62 @@ function AdminDashboard() {
               </>
             )}
 
+             {/* ================= ALUMNI FORM ================= */}
+            {activeTab === "alumni" && (
+              <>
+                <input
+                  placeholder="Name"
+                  value={alumniForm.name}
+                  onChange={(e) =>
+                    setAlumniForm({ ...alumniForm, name: e.target.value })
+                  }
+                />
+
+                <input
+                  placeholder="Email"
+                  value={alumniForm.email}
+                  onChange={(e) =>
+                    setAlumniForm({ ...alumniForm, email: e.target.value })
+                  }
+                />
+
+                <input
+                  placeholder="Company"
+                  value={alumniForm.company}
+                  onChange={(e) =>
+                    setAlumniForm({ ...alumniForm, company: e.target.value })
+                  }
+                />
+
+                <input
+                  placeholder="Position"
+                  value={alumniForm.position}
+                  onChange={(e) =>
+                    setAlumniForm({ ...alumniForm, position: e.target.value })
+                  }
+                />
+
+                <input
+                  placeholder="Year"
+                  value={alumniForm.year}
+                  onChange={(e) =>
+                    setAlumniForm({ ...alumniForm, year: e.target.value })
+                  }
+                />
+
+                <input
+                  type="file"
+                  onChange={(e) =>
+                    setAlumniForm({
+                      ...alumniForm,
+                      photo: e.target.files[0],
+                    })
+                  }
+                />
+
+                <button onClick={saveAlumni}>Save</button>
+              </>
+            )} 
             {/* EVENT */}
             {activeTab === "events" && (
               <>

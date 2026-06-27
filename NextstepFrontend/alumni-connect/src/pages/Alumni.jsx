@@ -5,14 +5,11 @@ import "./alumni.css";
 function Alumni() {
   const [alumni, setAlumni] = useState([]);
   const [search, setSearch] = useState("");
-
-  const [selectedAlumni, setSelectedAlumni] =
-    useState(null);
-
-  const [connectAlumni, setConnectAlumni] =
-    useState(null);
-
+  const [selectedAlumni, setSelectedAlumni] = useState(null);
+  const [connectAlumni, setConnectAlumni] = useState(null);
   const [message, setMessage] = useState("");
+
+  const API = "http://localhost:5000"; // ✅ LOCAL ONLY
 
   /* ================= FETCH ALUMNI ================= */
   useEffect(() => {
@@ -21,35 +18,32 @@ function Alumni() {
 
   const fetchAlumni = async () => {
     try {
-      const res = await fetch(
-        "https://nextstep-project-1.onrender.com/getAlumni"
-      );
-
+      const res = await fetch(`${API}/getAlumni`);
       const data = await res.json();
 
-      if (data.status === "ok") {
+      console.log("ALUMNI API RESPONSE:", data);
+
+      if (data?.status === "ok" && Array.isArray(data?.data)) {
         setAlumni(data.data);
+      } else {
+        setAlumni([]);
       }
     } catch (err) {
       console.log(err);
+      setAlumni([]);
     }
   };
 
   /* ================= FILTER ================= */
-  const filteredAlumni = alumni.filter(
-    (item) =>
-      item.name
-        .toLowerCase()
-        .includes(search.toLowerCase()) ||
+  const filteredAlumni = alumni.filter((item) => {
+    const q = search.toLowerCase();
 
-      item.company
-        .toLowerCase()
-        .includes(search.toLowerCase()) ||
-
-      item.position
-        .toLowerCase()
-        .includes(search.toLowerCase())
-  );
+    return (
+      (item?.name || "").toLowerCase().includes(q) ||
+      (item?.company || "").toLowerCase().includes(q) ||
+      (item?.position || "").toLowerCase().includes(q)
+    );
+  });
 
   /* ================= SEND EMAIL ================= */
   const sendConnectionRequest = async () => {
@@ -59,55 +53,30 @@ function Alumni() {
     }
 
     try {
-      const res = await fetch(
-        "https://nextstep-project-1.onrender.com/sendConnectionMail",
-        {
-          method: "POST",
+      const res = await fetch(`${API}/sendConnectionMail`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          toEmail: connectAlumni.email,
+          alumniName: connectAlumni.name,
+          message: message,
+        }),
+      });
 
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
+      const data = await res.json();
 
-          body: JSON.stringify({
-            toEmail:
-              connectAlumni.email,
-
-            alumniName:
-              connectAlumni.name,
-
-            message:
-              message,
-          }),
-        }
-      );
-
-      const data =
-        await res.json();
-
-      console.log(data);
-
-      if (
-        data.status === "ok"
-      ) {
-        alert(
-          "Message Sent Successfully ✅"
-        );
-
+      if (data.status === "ok") {
+        alert("Message Sent Successfully ✅");
         setMessage("");
-
         setConnectAlumni(null);
       } else {
-        alert(
-          data.message
-        );
+        alert(data.message);
       }
     } catch (err) {
       console.log(err);
-
-      alert(
-        "Failed to send message"
-      );
+      alert("Failed to send message");
     }
   };
 
@@ -121,85 +90,48 @@ function Alumni() {
           type="text"
           placeholder="Search by name, company..."
           value={search}
-          onChange={(e) =>
-            setSearch(
-              e.target.value
-            )
-          }
+          onChange={(e) => setSearch(e.target.value)}
         />
-
-        <button className="filter-btn">
-          Search
-        </button>
       </div>
 
       {/* CARDS */}
       <div className="container">
-        {filteredAlumni.map(
-          (item) => (
-            <div
-              className="card"
-              key={item._id}
-            >
-              <div className="badge">
-                Placed {item.year}
-              </div>
+        {filteredAlumni.map((item) => (
+          <div className="card" key={item._id}>
+            <div className="badge">Placed {item.year}</div>
 
-              <img
-                src={`https://nextstep-project-1.onrender.com/uploads/${item.photo}`}
-                alt={item.name}
-              />
+            {/* ✅ LOCAL IMAGE URL */}
+            <img
+              src={`${API}/uploads/${item.photo}`}
+              alt={item.name}
+            />
 
-              <h3>{item.name}</h3>
+            <h3>{item.name}</h3>
+            <p>
+              {item.position} @ {item.company}
+            </p>
+            <span>{item.email}</span>
 
-              <p>
-                {item.position} @{" "}
-                {item.company}
-              </p>
-
-              <span>
-                {item.email}
-              </span>
-
-              <div className="skills">
-                <span>
-                  {item.company}
-                </span>
-
-                <span>
-                  {item.position}
-                </span>
-
-                <span>
-                  {item.year}
-                </span>
-              </div>
-
-              <div className="buttons">
-                <button
-                  onClick={() =>
-                    setSelectedAlumni(
-                      item
-                    )
-                  }
-                >
-                  View Profile
-                </button>
-
-                <button
-                  className="secondary"
-                  onClick={() =>
-                    setConnectAlumni(
-                      item
-                    )
-                  }
-                >
-                  Connect
-                </button>
-              </div>
+            <div className="skills">
+              <span>{item.company}</span>
+              <span>{item.position}</span>
+              <span>{item.year}</span>
             </div>
-          )
-        )}
+
+            <div className="buttons">
+              <button onClick={() => setSelectedAlumni(item)}>
+                View Profile
+              </button>
+
+              <button
+                className="secondary"
+                onClick={() => setConnectAlumni(item)}
+              >
+                Connect
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* PROFILE POPUP */}
@@ -208,59 +140,23 @@ function Alumni() {
           <div className="popup-box">
             <button
               className="close-btn"
-              onClick={() =>
-                setSelectedAlumni(
-                  null
-                )
-              }
+              onClick={() => setSelectedAlumni(null)}
             >
               ✖
             </button>
 
             <img
-              src={`https://nextstep-project-1.onrender.com/uploads/${selectedAlumni.photo}`}
+              src={`${API}/uploads/${selectedAlumni.photo}`}
               alt={selectedAlumni.name}
               className="popup-img"
             />
 
-            <h2>
-              {
-                selectedAlumni.name
-              }
-            </h2>
+            <h2>{selectedAlumni.name}</h2>
+            <h4>{selectedAlumni.position}</h4>
 
-            <h4>
-              {
-                selectedAlumni.position
-              }
-            </h4>
-
-            <p>
-              <strong>
-                Company:
-              </strong>{" "}
-              {
-                selectedAlumni.company
-              }
-            </p>
-
-            <p>
-              <strong>
-                Email:
-              </strong>{" "}
-              {
-                selectedAlumni.email
-              }
-            </p>
-
-            <p>
-              <strong>
-                Batch:
-              </strong>{" "}
-              {
-                selectedAlumni.year
-              }
-            </p>
+            <p><strong>Company:</strong> {selectedAlumni.company}</p>
+            <p><strong>Email:</strong> {selectedAlumni.email}</p>
+            <p><strong>Batch:</strong> {selectedAlumni.year}</p>
           </div>
         </div>
       )}
@@ -272,75 +168,36 @@ function Alumni() {
             <button
               className="close-btn"
               onClick={() => {
-                setConnectAlumni(
-                  null
-                );
-
+                setConnectAlumni(null);
                 setMessage("");
               }}
             >
               ✖
             </button>
 
-            <h2>
-              Connect with{" "}
-              {
-                connectAlumni.name
-              }
-            </h2>
+            <h2>Connect with {connectAlumni.name}</h2>
 
-            <p>
-              <strong>
-                Email:
-              </strong>{" "}
-              {
-                connectAlumni.email
-              }
-            </p>
-
-            <p>
-              <strong>
-                Company:
-              </strong>{" "}
-              {
-                connectAlumni.company
-              }
-            </p>
-
-            <p>
-              <strong>
-                Role:
-              </strong>{" "}
-              {
-                connectAlumni.position
-              }
-            </p>
+            <p><strong>Email:</strong> {connectAlumni.email}</p>
+            <p><strong>Company:</strong> {connectAlumni.company}</p>
+            <p><strong>Role:</strong> {connectAlumni.position}</p>
 
             <textarea
               placeholder="Write your message..."
               rows="4"
               value={message}
-              onChange={(e) =>
-                setMessage(
-                  e.target.value
-                )
-              }
+              onChange={(e) => setMessage(e.target.value)}
               style={{
                 width: "100%",
                 padding: "10px",
                 marginTop: "15px",
                 borderRadius: "8px",
               }}
-            ></textarea>
+            />
 
             <button
               className="connect-btn"
-              style={{
-                marginTop: "15px",
-              }}
-              onClick={
-                sendConnectionRequest
-              }
+              style={{ marginTop: "15px" }}
+              onClick={sendConnectionRequest}
             >
               Send Request
             </button>
@@ -350,5 +207,5 @@ function Alumni() {
     </>
   );
 }
-
 export default Alumni;
+

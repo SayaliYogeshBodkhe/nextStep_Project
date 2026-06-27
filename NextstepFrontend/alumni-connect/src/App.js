@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 /* Pages */
 import Home from "./pages/Home";
@@ -22,9 +22,9 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
 
 function App() {
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-
     const getCurrentUser = async () => {
       try {
         const res = await fetch(
@@ -35,38 +35,43 @@ function App() {
         );
 
         if (!res.ok) {
-          console.log("Current user API failed");
+          localStorage.removeItem("userType");
           return;
         }
 
         const data = await res.json();
         console.log("CURRENT USER:", data);
 
-        // 🔥 SAFE ROLE EXTRACTION (important fix)
         const role = data?.user?.userType || data?.user?.role;
 
         if (role) {
           localStorage.setItem("userType", role);
+        } else {
+          localStorage.removeItem("userType");
         }
-
       } catch (err) {
         console.log("Error fetching current user:", err);
+        localStorage.removeItem("userType");
+      } finally {
+        setLoading(false);
       }
     };
 
     getCurrentUser();
-
   }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <BrowserRouter>
       <Routes>
-
-        {/* ================= PUBLIC ROUTES ================= */}
+        {/* PUBLIC ROUTES */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
-        {/* ================= PROTECTED USER ROUTES ================= */}
+        {/* USER ROUTES */}
         <Route
           path="/"
           element={
@@ -166,7 +171,7 @@ function App() {
           }
         />
 
-        {/* ================= ADMIN ROUTE ================= */}
+        {/* ADMIN ROUTE */}
         <Route
           path="/admin-dashboard"
           element={
@@ -175,7 +180,6 @@ function App() {
             </AdminRoute>
           }
         />
-
       </Routes>
     </BrowserRouter>
   );

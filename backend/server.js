@@ -4,9 +4,12 @@ const express = require("express");
 const cors = require("cors");
 const session = require("express-session");
 const passport = require("passport");
+const path = require("path");
+
+const app = express(); // ✅ MUST be first
 
 require("./auth/google");
-require("./cron/meetingCron"); // only this exists now
+require("./cron/meetingCron");
 
 const connectDB = require("./config/db");
 
@@ -18,8 +21,6 @@ const registrationRoutes = require("./routes/registrationRoutes");
 const mailRoutes = require("./routes/mailRoutes");
 const roadmapRoutes = require("./routes/roadmapRoutes");
 const resourceRoutes = require("./routes/resourceRoutes");
-
-const app = express();
 
 /* MIDDLEWARE */
 app.use(express.json());
@@ -45,15 +46,14 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(notificationRoutes);
-
-/* STATIC */
-app.use("/uploads", express.static("uploads"));
+/* ✅ STATIC FILES (UPLOADS) */
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 /* DB */
 connectDB();
 
 /* ROUTES */
+app.use(notificationRoutes);
 app.use(authRoutes);
 app.use(alumniRoutes);
 app.use(eventRoutes);
