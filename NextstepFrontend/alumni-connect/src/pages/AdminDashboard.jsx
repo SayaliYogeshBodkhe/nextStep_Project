@@ -17,7 +17,6 @@ function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("users");
   const [isEdit, setIsEdit] = useState(false);
   const [editId, setEditId] = useState(null);
-
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("All");
 
@@ -69,6 +68,12 @@ function AdminDashboard() {
     thumbnail: "",
     link: "",
     tags: [],
+  });
+
+  //Notification
+  const [notificationForm, setNotificationForm] = useState({
+    title: "",
+    message: "",
   });
 
   // AUTH CHECK
@@ -140,6 +145,29 @@ function AdminDashboard() {
       setResources(data.data);
     }
   };
+  //Save Notification function
+  const saveNotification = async () => {
+  if (!notificationForm.title || !notificationForm.message) {
+    alert("Fill both title and message");
+    return;
+  }
+
+  await fetch("http://localhost:5000/addNotification", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(notificationForm),
+  });
+
+  // reset form after successful save
+  setNotificationForm({
+    title: "",
+    message: "",
+  });
+
+  setShowModal(false);
+};
     // DELETE FUNCTIONS
   const deleteUser = async (id) => {
     await fetch(`http://localhost:5000/deleteUser/${id}`, {
@@ -323,6 +351,7 @@ function AdminDashboard() {
           <li onClick={() => setActiveTab("events")}>Events</li>
           <li onClick={() => setActiveTab("roadmaps")}>Roadmaps</li>
           <li onClick={() => setActiveTab("resources")}>Resources</li>
+          <li onClick={() => setActiveTab("notifications")}>Notifications</li>
           <li onClick={handleLogout} style={{ color: "red" }}>
             Logout
           </li>
@@ -561,6 +590,44 @@ function AdminDashboard() {
           </>
         )}
       </div>
+      {/* Notification */}
+      {activeTab === "notifications" && (
+      <>
+        <div className="notification-panel">
+          <div className="notification-form">
+          <input
+          type="text"
+          placeholder="Title"
+          value={notificationForm.title}
+          onChange={(e) =>
+            setNotificationForm({
+              ...notificationForm,
+              title: e.target.value,
+            })
+          }
+        />
+
+        <textarea
+          placeholder="Message"
+          value={notificationForm.message}
+          onChange={(e) =>
+            setNotificationForm({
+              ...notificationForm,
+              message: e.target.value,
+            })
+          }
+        />
+
+            <button
+              className="notification-save-btn"
+              onClick={saveNotification}
+            >
+              Save
+            </button>
+          </div>
+        </div>
+      </>
+    )}
             {/* STUDENTS MODAL */}
       {showStudents && (
         <div className="modal-overlay">

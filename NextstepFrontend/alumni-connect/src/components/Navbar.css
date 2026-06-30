@@ -1,294 +1,148 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
-
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
+.notification-wrapper {
+  position: relative;
+  display: inline-block;
 }
 
-.navbar{
-
-  width:100%;
-
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-
-  padding:14px 45px;
-
-  background:linear-gradient(
-    135deg,
-    #1e293b,
-    #334155
-  );
-
-  position:sticky;
-  top:0;
-
-  z-index:999;
-
-  box-shadow:
-    0 8px 24px rgba(0,0,0,0.12);
-
-  font-family:'Poppins',sans-serif;
+/* 🔔 BUTTON */
+.bell-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  position: relative;
 }
 
-/* LOGO */
-
-.navbar img{
-
-  width:48px;
-  height:48px;
-
-  object-fit:contain;
-
-  cursor:pointer;
+/* 🔴 COUNT BADGE */
+.notification-count {
+  position: absolute;
+  top: -5px;
+  right: -8px;
+  background: red;
+  color: white;
+  font-size: 12px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* LINKS */
-
-.nav-links{
-
-  display:flex;
-  align-items:center;
-  gap:22px;
-
-  flex-wrap:wrap;
+/* 📦 NOTIFICATION BOX */
+.notification-box {
+  position: absolute;
+  right: 0;
+  top: 35px;
+  width: 280px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  z-index: 1000;
+  max-height: 350px;
+  overflow-y: auto;
 }
 
-/* NAV LINKS */
-
-.nav-links a{
-
-  text-decoration:none;
-
-  color:white;
-
-  font-size:15px;
-  font-weight:500;
-
-  transition:0.3s;
-
-  position:relative;
-}
-
-/* HOVER EFFECT */
-
-.nav-links a::after{
-
-  content:"";
-
-  position:absolute;
-
-  left:0;
-  bottom:-6px;
-
-  width:0%;
-  height:2px;
-
-  background:#818cf8;
-
-  transition:0.3s;
-}
-
-.nav-links a:hover::after{
-  width:100%;
-}
-
-.nav-links a:hover{
-  color:#c7d2fe;
-}
-
-/* LOGOUT */
-
-.logout-btn{
-
-  color:#ff6b6b;
-
-  font-weight:600;
-
-  cursor:pointer;
-
-  transition:0.3s;
-}
-
-.logout-btn:hover{
-  color:#ff3b3b;
-}
-
-/* NOTIFICATION */
-
-.notification-wrapper{
-  position:relative;
-}
-
-/* BELL */
-
-.bell-btn{
-
-  width:44px;
-  height:44px;
-
-  border:none;
-  border-radius:50%;
-
-  background:white;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  cursor:pointer;
-
-  font-size:20px;
-
-  transition:0.3s;
-
-  box-shadow:
-    0 4px 14px rgba(0,0,0,0.15);
-}
-
-.bell-btn:hover{
-
-  transform:translateY(-2px)
-  scale(1.05);
-}
-
-/* COUNT */
-
-.notification-count{
-
-  position:absolute;
-
-  top:-4px;
-  right:-4px;
-
-  width:22px;
-  height:22px;
-
-  border-radius:50%;
-
-  background:#ef4444;
-
-  color:white;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  font-size:11px;
-  font-weight:700;
-}
-
-/* POPUP */
-
-.notification-box{
-
-  position:absolute;
-
-  top:60px;
-  right:0;
-
-  width:340px;
-
-  max-height:420px;
-
-  overflow-y:auto;
-
-  background:white;
-
-  border-radius:20px;
-
-  padding:18px;
-
-  z-index:99999;
-
-  box-shadow:
-    0 15px 40px rgba(0,0,0,0.18);
+/* HEADER */
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eee;
 }
 
 /* TITLE */
-
-.notification-title{
-
-  font-size:18px;
-  font-weight:700;
-
-  margin-bottom:16px;
-
-  color:#111827;
+.notification-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
 }
 
-/* ITEM */
-
-.notification-item{
-
-  background:#f8fafc;
-
-  padding:14px;
-
-  border-radius:14px;
-
-  margin-bottom:12px;
-
-  transition:0.3s;
-
-  border:1px solid #e2e8f0;
+/* ❌ CLOSE BUTTON */
+.close-notification-btn {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #ff4d4d;
 }
 
-.notification-item:hover{
-
-  background:#eef2ff;
-
-  transform:translateY(-2px);
+.close-notification-btn:hover {
+  transform: scale(1.1);
 }
 
-.notification-item h4{
-
-  color:#111827;
-
-  font-size:15px;
-
-  margin-bottom:6px;
+/* 🧾 ITEM */
+.notification-item {
+  padding: 8px;
+  border-bottom: 1px solid #f1f1f1;
 }
 
-.notification-item p{
-
-  color:#64748b;
-
-  font-size:13px;
-
-  line-height:1.5;
+.notification-item h4 {
+  margin: 0;
+  font-size: 14px;
 }
 
-/* EMPTY */
-
-.empty-notification{
-
-  text-align:center;
-
-  color:#94a3b8;
-
-  padding:20px 0;
+.notification-item p {
+  margin: 3px 0 0;
+  font-size: 12px;
+  color: #555;
 }
 
-/* RESPONSIVE */
-
-@media(max-width:900px){
-
-  .navbar{
-
-    flex-direction:column;
-
-    gap:18px;
-
-    padding:18px;
+/* EMPTY STATE */
+.empty-notification {
+  text-align: center;
+  padding: 10px;
+  color: #888;
+}
+/* 📱 MOBILE NAVBAR LAYOUT */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px;
   }
 
-  .nav-links{
+  .nav-links {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+    margin-top: 10px;
+  }
 
-    justify-content:center;
+  .nav-links a,
+  .logout-btn {
+    padding: 8px 0;
+    width: 100%;
+  }
 
-    gap:16px;
+  /* 🔔 notification wrapper */
+  .notification-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    position: relative;
+  }
+
+  /* 📦 notification box */
+  .notification-box {
+    position: fixed;
+    top: 70px;
+    right: 10px;
+    left: 10px;
+    width: auto;
+    max-width: 95%;
+    max-height: 60vh;
+  }
+
+  /* 🔔 bell button size adjustment */
+  .bell-btn {
+    font-size: 22px;
+  }
+
+  /* 🔴 badge adjustment */
+  .notification-count {
+    top: -4px;
+    right: 2px;
   }
 }

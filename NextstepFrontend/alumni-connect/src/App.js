@@ -16,7 +16,6 @@ import SingleProfile from "./pages/SingleProfile";
 import Signup from "./pages/Signup";
 import AdminDashboard from "./pages/AdminDashboard";
 import RoadmapDetails from "./pages/RoadmapDetail";
-
 /* Protected Routes */
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
@@ -125,6 +124,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+
 
         <Route
           path="/alumni"

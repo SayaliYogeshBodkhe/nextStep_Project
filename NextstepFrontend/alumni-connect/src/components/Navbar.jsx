@@ -1,230 +1,167 @@
 import { Link, useNavigate } from "react-router-dom";
-
-import {
-  useState,
-  useEffect,
-} from "react";
+import { useState, useEffect, useRef } from "react";
+import { io } from "socket.io-client";
 
 import logo from "../assets/logo.png";
-
 import "./Navbar.css";
 
 function Navbar() {
+  const navigate = useNavigate();
+  const socketRef = useRef(null);
 
-  const navigate =
-    useNavigate();
+  const BASE_URL = "http://localhost:5000";
+  // deployed असल्यास:
+  // const BASE_URL = "https://nextstep-project-1.onrender.com";
 
   /* USER */
-
-  const [userType,
-    setUserType] =
-    useState(
-      localStorage.getItem(
-        "userType"
-      )
-    );
+  const [userType, setUserType] = useState(
+    localStorage.getItem("userType")
+  );
 
   /* NOTIFICATION */
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
 
-  const [notifications,
-    setNotifications] =
-    useState([]);
+  /* FETCH NOTIFICATIONS */
+  const fetchNotifications = async () => {
+    try {
+      const res = await fetch(`${BASE_URL}/getNotifications`);
+      const data = await res.json();
 
-  const [showNotifications,
-    setShowNotifications] =
-    useState(false);
-
-  /* FETCH NOTIFICATION */
-
-  const fetchNotifications =
-    async () => {
-
-      try {
-
-        const res =
-         await fetch("https://nextstep-project-1.onrender.com/getNotifications");
-
-        const data =
-          await res.json();
-
-        if (
-          data.status === "ok"
-        ) {
-
-          setNotifications(
-            data.data
-          );
-        }
-
-      } catch (err) {
-
-        console.log(err);
+      if (data && data.status === "ok") {
+        setNotifications(data.data || []);
       }
+    } catch (err) {
+      console.log("Fetch notification error:", err);
+    }
   };
 
-  /* USE EFFECT */
-
+  /* SOCKET + INITIAL LOAD */
   useEffect(() => {
-
     fetchNotifications();
 
-    const checkUser = () => {
+    socketRef.current = io(BASE_URL);
 
-      setUserType(
-        localStorage.getItem(
-          "userType"
-        )
-      );
+    socketRef.current.on("connect", () => {
+      console.log("Socket connected:", socketRef.current.id);
+    });
+
+    socketRef.current.on("newNotification", (data) => {
+      console.log("New notification:", data);
+      setNotifications((prev) => [data, ...prev]);
+    });
+
+    const checkUser = () => {
+      setUserType(localStorage.getItem("userType"));
     };
 
-    window.addEventListener(
-      "storage",
-      checkUser
-    );
-
+    window.addEventListener("storage", checkUser);
     checkUser();
 
-    return () =>
-      window.removeEventListener(
-        "storage",
-        checkUser
-      );
+    return () => {
+      window.removeEventListener("storage", checkUser);
 
+      if (socketRef.current) {
+        socketRef.current.off("newNotification");
+        socketRef.current.disconnect();
+      }
+    };
+  }, []);
+
+  /* OUTSIDE CLICK */
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setShowNotifications(false);
+    };
+
+    document.addEventListener("click", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
   }, []);
 
   /* LOGOUT */
-
   const handleLogout = () => {
-
-    localStorage.removeItem(
-      "userType"
-    );
-
+    localStorage.removeItem("userType");
     setUserType(null);
-
     navigate("/login");
   };
 
   return (
-
     <div className="navbar">
-
       {/* LOGO */}
-
-      <img
-        src={logo}
-        alt="logo"
-        width="45"
-      />
+      <img src={logo} alt="logo" width="45" />
 
       {/* LINKS */}
-
       <div className="nav-links">
+        <Link to="/">Home</Link>
+        <Link to="/events">Events</Link>
+        <Link to="/resources">Resources</Link>
+        <Link to="/roadmap">Roadmap</Link>
+        <Link to="/alumni">Alumni</Link>
+        <Link to="/about">About</Link>
 
-        <Link to="/">
-          Home
-        </Link>
-
-        <Link to="/events">
-          Events
-        </Link>
-
-        <Link to="/resources">
-          Resources
-        </Link>
-
-        <Link to="/roadmap">
-          Roadmap
-        </Link>
-
-        <Link to="/alumni">
-          Alumni
-        </Link>
-
-        <Link to="/about">
-          About
-        </Link>
-
-        {/* BELL */}
-
-        <div className="notification-wrapper">
-
+        {/* NOTIFICATION */}
+        <div
+          className="notification-wrapper"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* BELL */}
           <button
             className="bell-btn"
-
-            onClick={() =>
-              setShowNotifications(
-                !showNotifications
-              )
-            }
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowNotifications(!showNotifications);
+            }}
           >
             🔔
           </button>
 
+          {/* COUNT */}
           {notifications.length > 0 && (
-
             <span className="notification-count">
-
               {notifications.length}
-
             </span>
-
           )}
 
+          {/* BOX */}
           {showNotifications && (
-
             <div className="notification-box">
+              <div className="notification-header">
+                <h3 className="notification-title">Notifications</h3>
 
-              <h3 className="notification-title">
+                <button
+                  className="close-notification-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowNotifications(false);
+                  }}
+                >
+                  ✖
+                </button>
+              </div>
 
-                Notifications
-
-              </h3>
-
+              {/* LIST */}
               {notifications.length > 0 ? (
-
                 notifications.map((n) => (
-
-                  <div
-                    className="notification-item"
-                    key={n._id}
-                  >
-
-                    <h4>
-                      {n.title}
-                    </h4>
-
-                    <p>
-                      {n.message}
-                    </p>
-
+                  <div className="notification-item" key={n._id}>
+                    <h2>{n.title}</h2>
+                    <p>{n.message}</p>
                   </div>
-
                 ))
-
               ) : (
-
-                <p className="empty-notification">
-
-                  No Notifications
-
-                </p>
-
+                <p className="empty-notification">No Notifications</p>
               )}
-
             </div>
-
           )}
-
         </div>
 
-        {/* LOGIN LOGOUT */}
-
+        {/* LOGIN / LOGOUT */}
         {userType ? (
-
           <span
             onClick={handleLogout}
-             className="logout-btn"
+            className="logout-btn"
             style={{
               cursor: "pointer",
               color: "#ff4d4d",
@@ -233,17 +170,10 @@ function Navbar() {
           >
             Logout
           </span>
-
         ) : (
-
-          <Link to="/login">
-            Login
-          </Link>
-
+          <Link to="/login">Login</Link>
         )}
-
       </div>
-
     </div>
   );
 }
