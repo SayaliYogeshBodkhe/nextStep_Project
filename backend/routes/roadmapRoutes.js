@@ -85,6 +85,41 @@ router.post("/addRoadmap", async (req, res) => {
     });
   }
 });
+/* ================= UPDATE ROADMAP ================= */
+router.put("/updateRoadmap/:id", async (req, res) => {
+  try {
+    const updatedRoadmap = await Roadmap.findByIdAndUpdate(
+      req.params.id,
+      {
+        role: req.body.role,
+        category: req.body.category,
+        icon: req.body.icon,
+        company: req.body.company,
+        location: req.body.location,
+        year: req.body.year,
+        description: req.body.description,
+        duration: req.body.duration,
+        salary: req.body.salary,
+        tools: req.body.tools,
+        projects: req.body.projects,
+        skills: req.body.skills,
+        resources: req.body.resources,
+        steps: req.body.steps,
+      },
+      { new: true }
+    );
+
+    res.json({
+      status: "ok",
+      data: updatedRoadmap,
+    });
+  } catch (err) {
+    res.json({
+      status: "error",
+      error: err.message,
+    });
+  }
+});
 /* ================= DELETE ROADMAP ================= */
 
 router.delete("/deleteRoadmap/:id", async (req, res) => {

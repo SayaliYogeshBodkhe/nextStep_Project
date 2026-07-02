@@ -43,7 +43,20 @@ router.post("/addResource", async (req, res) => {
     });
   }
 });
+/* Update */
+router.put("/updateResource/:id", async (req, res) => {
+  try {
+    const updated = await Resource.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
 
+    res.json({ status: "ok", data: updated });
+  } catch (err) {
+    res.json({ status: "error", error: err.message });
+  }
+});
 /* DELETE */
 router.delete(
   "/deleteResource/:id",

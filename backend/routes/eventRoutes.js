@@ -19,10 +19,7 @@ router.post(
   addEvent
 );
 
-router.put(
-  "/updateEvent/:id",
-  updateEvent
-);
+router.put("/updateEvent/:id", updateEvent);
 
 router.delete(
   "/deleteEvent/:id",

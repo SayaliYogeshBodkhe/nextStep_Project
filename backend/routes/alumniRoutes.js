@@ -25,11 +25,27 @@ router.post(
 );
 
 /* UPDATE */
-router.put(
-  "/updateAlumni/:id",
-  upload.single("photo"),
-  updateAlumni
-);
+router.put("/updateAlumni/:id", upload.single("photo"), async (req, res) => {
+  try {
+    const updateData = {
+      name: req.body.name,
+      email: req.body.email,
+      company: req.body.company,
+      position: req.body.position,
+      year: req.body.year,
+    };
+
+    if (req.file) {
+      updateData.photo = req.file.filename;
+    }
+
+    await Alumni.findByIdAndUpdate(req.params.id, updateData);
+
+    res.json({ status: "ok" });
+  } catch (err) {
+    res.json({ status: "error", error: err.message });
+  }
+});
 
 /* DELETE */
 router.delete(

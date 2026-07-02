@@ -178,7 +178,31 @@ const fetchNotifications = async () => {
   } catch (err) {
     console.error("Error fetching notifications:", err);
   }
-};// ================= SAVE / UPDATE FUNCTIONS =================
+};
+// ================= SAVE / UPDATE FUNCTIONS =================
+const updateNotification = async () => {
+  try {
+    await fetch(`http://localhost:5000/updateNotification/${editId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(notificationForm),
+    });
+
+    fetchNotifications();
+    setShowModal(false);
+    setIsEdit(false);
+    setEditId(null);
+
+    setNotificationForm({
+      title: "",
+      message: "",
+    });
+  } catch (err) {
+    console.error("Error updating notification:", err);
+  }
+};
 
 // Save Notification
 const saveNotification = async () => {
@@ -232,7 +256,52 @@ const saveAlumni = async () => {
     console.error("Error saving alumni:", err);
   }
 };
+//Update Alumni
+const updateAlumni = async () => {
+  try {
+    const formData = new FormData();
+    formData.append("name", alumniForm.name);
+    formData.append("email", alumniForm.email);
+    formData.append("company", alumniForm.company);
+    formData.append("position", alumniForm.position);
+    formData.append("year", alumniForm.year);
 
+    if (alumniForm.photo) {
+      formData.append("photo", alumniForm.photo);
+    }
+
+    await fetch(`http://localhost:5000/updateAlumni/${editId}`, {
+      method: "PUT",
+      body: formData,
+    });
+
+    fetchAlumni();
+    setShowModal(false);
+    setIsEdit(false);
+    setEditId(null);
+  } catch (err) {
+    console.error("Error updating alumni:", err);
+  }
+};
+//Update Event
+const updateEvent = async () => {
+  try {
+    await fetch(`http://localhost:5000/updateEvent/${editId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(eventForm),
+    });
+
+    fetchEvents();
+    setShowModal(false);
+    setIsEdit(false);
+    setEditId(null);
+  } catch (err) {
+    console.error("Error updating event:", err);
+  }
+};
 // Save Event
 const formatTime12hr = (time) => {
   if (!time) return "";
@@ -264,6 +333,25 @@ const saveEvent = async () => {
   }
 };
 
+// Update Roadmap
+const updateRoadmap = async () => {
+  try {
+    await fetch(`http://localhost:5000/updateRoadmap/${editId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(roadmapForm),
+    });
+
+    fetchRoadmaps();
+    setShowModal(false);
+    setIsEdit(false);
+    setEditId(null);
+  } catch (err) {
+    console.error("Error updating roadmap:", err);
+  }
+};
 // Save Roadmap
 const saveRoadmap = async () => {
   try {
@@ -281,7 +369,25 @@ const saveRoadmap = async () => {
     console.error("Error saving roadmap:", err);
   }
 };
+//Update Resources
+const updateResource = async () => {
+  try {
+    await fetch(`http://localhost:5000/updateResource/${editId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(resourceForm),
+    });
 
+    fetchResources();
+    setShowModal(false);
+    setIsEdit(false);
+    setEditId(null);
+  } catch (err) {
+    console.error("Error updating resource:", err);
+  }
+};
 // Save Resource
 const saveResource = async () => {
   try {
@@ -415,13 +521,29 @@ const handleEdit = (data, type) => {
   }
 
   if (type === "roadmap") {
-    setRoadmapForm(data);
-  }
+  setRoadmapForm({
+    role: data.role || "",
+    company: data.company || "",
+    category: data.category || "",
+    location: data.location || "",
+    year: data.year || "",
+    icon: data.icon || "",
+    steps: data.steps || [],
+  });
+}
 
   if (type === "resource") {
-    setResourceForm(data);
-  }
-
+  setResourceForm({
+    title: data.title || "",
+    description: data.description || "",
+    category: data.category || "",
+    type: data.type || "",
+    difficulty: data.difficulty || "",
+    thumbnail: data.thumbnail || "",
+    link: data.link || "",
+    tags: data.tags || [],
+  });
+}
   if (type === "notification") {
     setNotificationForm({
       title: data.title,
@@ -561,10 +683,19 @@ return (
         <>
           <button
             className="add-btn"
-            onClick={() => {
-              setShowModal(true);
-              setIsEdit(false);
-            }}
+           onClick={() => {
+            setShowModal(true);
+            setIsEdit(false);
+            setEditId(null);
+            setAlumniForm({
+              name: "",
+              email: "",
+              company: "",
+              position: "",
+              year: "",
+              photo: null,
+            });
+          }}
           >
             + Add Alumni
           </button>
@@ -589,9 +720,7 @@ return (
                   <td>{a.position}</td>
                   <td>{a.year}</td>
                   <td>
-                    <button onClick={() => handleEdit(a, "alumni")}>
-                      Edit
-                    </button>
+                    <button onClick={() => handleEdit(a, "alumni")}>Edit</button>
                     <button onClick={() => deleteAlumni(a._id)}>
                       Delete
                     </button>
@@ -609,9 +738,16 @@ return (
           <button
             className="add-btn"
             onClick={() => {
-              setShowModal(true);
-              setIsEdit(false);
-            }}
+            setShowModal(true);
+            setIsEdit(false);
+            setEditId(null);
+            setEventForm({
+              title: "",
+              date: "",
+              time: "",
+              mode: "",
+            });
+          }}
           >
             + Add Event
           </button>
@@ -877,10 +1013,7 @@ return (
                   placeholder="Name"
                   value={alumniForm.name}
                   onChange={(e) =>
-                    setAlumniForm({
-                      ...alumniForm,
-                      name: e.target.value,
-                    })
+                    setAlumniForm({ ...alumniForm, name: e.target.value })
                   }
                 />
 
@@ -888,10 +1021,7 @@ return (
                   placeholder="Email"
                   value={alumniForm.email}
                   onChange={(e) =>
-                    setAlumniForm({
-                      ...alumniForm,
-                      email: e.target.value,
-                    })
+                    setAlumniForm({ ...alumniForm, email: e.target.value })
                   }
                 />
 
@@ -899,10 +1029,7 @@ return (
                   placeholder="Company"
                   value={alumniForm.company}
                   onChange={(e) =>
-                    setAlumniForm({
-                      ...alumniForm,
-                      company: e.target.value,
-                    })
+                    setAlumniForm({ ...alumniForm, company: e.target.value })
                   }
                 />
 
@@ -910,10 +1037,7 @@ return (
                   placeholder="Position"
                   value={alumniForm.position}
                   onChange={(e) =>
-                    setAlumniForm({
-                      ...alumniForm,
-                      position: e.target.value,
-                    })
+                    setAlumniForm({ ...alumniForm, position: e.target.value })
                   }
                 />
 
@@ -921,10 +1045,7 @@ return (
                   placeholder="Year"
                   value={alumniForm.year}
                   onChange={(e) =>
-                    setAlumniForm({
-                      ...alumniForm,
-                      year: e.target.value,
-                    })
+                    setAlumniForm({ ...alumniForm, year: e.target.value })
                   }
                 />
 
@@ -938,7 +1059,10 @@ return (
                   }
                 />
 
-                <button onClick={saveAlumni}>Save</button>
+                <button onClick={isEdit ? updateAlumni : saveAlumni}>
+                  {isEdit ? "Update" : "Save"}
+                </button>
+
                 <button onClick={() => setShowModal(false)}>Cancel</button>
               </>
             )}
@@ -993,8 +1117,8 @@ return (
                   <option value="Offline">Offline</option>
                 </select>
 
-                <button onClick={saveEvent}>Save</button>
-                <button onClick={() => setShowModal(false)}>Cancel</button>
+                  <button onClick={isEdit ? updateEvent : saveEvent}>{isEdit ? "Update" : "Save"}</button>
+                  <button onClick={() => setShowModal(false)}>Cancel</button>
 
               </>
             )}
@@ -1034,8 +1158,32 @@ return (
                     })
                   }
                 />
+                <input
+                  placeholder="Category"
+                  value={roadmapForm.category}
+                  onChange={(e) =>
+                    setRoadmapForm({ ...roadmapForm, category: e.target.value })
+                  }
+                />
 
-                <button onClick={saveRoadmap}>Save</button>
+                <input
+                  placeholder="Location"
+                  value={roadmapForm.location}
+                  onChange={(e) =>
+                    setRoadmapForm({ ...roadmapForm, location: e.target.value })
+                  }
+                />
+
+                <input
+                  placeholder="Year"
+                  value={roadmapForm.year}
+                  onChange={(e) =>
+                    setRoadmapForm({ ...roadmapForm, year: e.target.value })
+                  }
+                />
+                <button onClick={isEdit ? updateRoadmap : saveRoadmap}>
+                  {isEdit ? "Update" : "Save"}
+                </button>
                 <button onClick={() => setShowModal(false)}>Cancel</button>
 
               </>
@@ -1068,7 +1216,9 @@ return (
                     }
                   />
 
-                  <button onClick={saveNotification}>Save</button>
+                  <button onClick={isEdit ? updateNotification : saveNotification}>
+                    {isEdit ? "Update" : "Save"}
+                  </button>
                   <button onClick={() => setShowModal(false)}>Cancel</button>
 
                 </div>
@@ -1076,34 +1226,66 @@ return (
             )}
   
             {/* RESOURCES */}
-            {activeTab === "resources" && (
-              <>
-                <input
-                  placeholder="Title"
-                  value={resourceForm.title}
-                  onChange={(e) =>
-                    setResourceForm({
-                      ...resourceForm,
-                      title: e.target.value,
-                    })
-                  }
-                />
+          {activeTab === "resources" && (
+          <>
+            <input
+              placeholder="Title"
+              value={resourceForm.title}
+              onChange={(e) =>
+                setResourceForm({ ...resourceForm, title: e.target.value })
+              }
+            />
 
-                <textarea
-                  placeholder="Description"
-                  value={resourceForm.description}
-                  onChange={(e) =>
-                    setResourceForm({
-                      ...resourceForm,
-                      description: e.target.value,
-                    })
-                  }
-                />
+            <textarea
+              placeholder="Description"
+              value={resourceForm.description}
+              onChange={(e) =>
+                setResourceForm({
+                  ...resourceForm,
+                  description: e.target.value,
+                })
+              }
+            />
 
-                <button onClick={saveResource}>Save</button>
-                <button onClick={() => setShowModal(false)}>Cancel</button>
-              </>
-            )}
+            <input
+              placeholder="Category"
+              value={resourceForm.category}
+              onChange={(e) =>
+                setResourceForm({ ...resourceForm, category: e.target.value })
+              }
+            />
+
+            <input
+              placeholder="Type"
+              value={resourceForm.type}
+              onChange={(e) =>
+                setResourceForm({ ...resourceForm, type: e.target.value })
+              }
+            />
+
+            <input
+              placeholder="Difficulty"
+              value={resourceForm.difficulty}
+              onChange={(e) =>
+                setResourceForm({ ...resourceForm, difficulty: e.target.value })
+              }
+            />
+
+            <input
+              placeholder="Link"
+              value={resourceForm.link}
+              onChange={(e) =>
+                setResourceForm({ ...resourceForm, link: e.target.value })
+              }
+            />
+
+            <button onClick={isEdit ? updateResource : saveResource}>
+              {isEdit ? "Update" : "Save"}
+            </button>
+
+            <button onClick={() => setShowModal(false)}>Cancel</button>
+          </>
+        )}
 
           </div>
         </div>
