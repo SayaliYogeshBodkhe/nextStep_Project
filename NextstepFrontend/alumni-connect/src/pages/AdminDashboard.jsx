@@ -298,6 +298,13 @@ const updateEvent = async () => {
     setShowModal(false);
     setIsEdit(false);
     setEditId(null);
+
+    setEventForm({
+      title: "",
+      date: "",
+      time: "",
+      mode: "",
+    });
   } catch (err) {
     console.error("Error updating event:", err);
   }
@@ -515,10 +522,14 @@ const handleEdit = (data, type) => {
       photo: null,
     });
   }
-
-  if (type === "event") {
-    setEventForm(data);
-  }
+if (type === "event") {
+  setEventForm({
+    title: data.title || "",
+    date: data.date || "",
+    time: data.time || "",
+    mode: data.mode || "",
+  });
+}
 
   if (type === "roadmap") {
   setRoadmapForm({
@@ -1068,60 +1079,50 @@ return (
             )}
 
             {/* EVENTS */}
-            {activeTab === "events" && (
-              <>
-                <input
-                  placeholder="Title"
-                  value={eventForm.title}
-                  onChange={(e) =>
-                    setEventForm({
-                      ...eventForm,
-                      title: e.target.value,
-                    })
-                  }
-                />
+           {activeTab === "events" && (
+            <>
+              <input
+                placeholder="Title"
+                value={eventForm.title}
+                onChange={(e) =>
+                  setEventForm({ ...eventForm, title: e.target.value })
+                }
+              />
 
-                <input
-                  type="date"
-                  value={eventForm.date}
-                  onChange={(e) =>
-                    setEventForm({
-                      ...eventForm,
-                      date: e.target.value,
-                    })
-                  }
-                />
+              <input
+                type="date"
+                value={eventForm.date}
+                onChange={(e) =>
+                  setEventForm({ ...eventForm, date: e.target.value })
+                }
+              />
 
-                <input
-                  type="time"
-                  value={eventForm.time}
-                  onChange={(e) =>
-                    setEventForm({
-                      ...eventForm,
-                      time: e.target.value,
-                    })
-                  }
-                />
+              <input
+                type="time"
+                value={eventForm.time}
+                onChange={(e) =>
+                  setEventForm({ ...eventForm, time: e.target.value })
+                }
+              />
 
-                <select
-                  value={eventForm.mode}
-                  onChange={(e) =>
-                    setEventForm({
-                      ...eventForm,
-                      mode: e.target.value,
-                    })
-                  }
-                >
-                  <option value="">Select Mode</option>
-                  <option value="Online">Online</option>
-                  <option value="Offline">Offline</option>
-                </select>
+              <select
+                value={eventForm.mode}
+                onChange={(e) =>
+                  setEventForm({ ...eventForm, mode: e.target.value })
+                }
+              >
+                <option value="">Select Mode</option>
+                <option value="Online">Online</option>
+                <option value="Offline">Offline</option>
+              </select>
 
-                  <button onClick={isEdit ? updateEvent : saveEvent}>{isEdit ? "Update" : "Save"}</button>
-                  <button onClick={() => setShowModal(false)}>Cancel</button>
+              <button onClick={isEdit ? updateEvent : saveEvent}>
+                {isEdit ? "Update" : "Save"}
+              </button>
 
-              </>
-            )}
+              <button onClick={() => setShowModal(false)}>Cancel</button>
+            </>
+          )}
 
             {/* ROADMAPS */}
             {activeTab === "roadmaps" && (
