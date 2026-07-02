@@ -2,10 +2,14 @@
    ADMIN DASHBOARD
 =============================== */
 
-* {
+.admin-layout,
+.admin-layout * {
+  box-sizing: border-box;
+}
+
+body {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
 .admin-layout {
@@ -31,6 +35,7 @@
 
 .sidebar ul {
   list-style: none;
+  padding: 0;
 }
 
 .sidebar ul li {
@@ -50,6 +55,7 @@
   flex: 1;
   padding: 30px;
   overflow-y: auto;
+  overflow-x: auto;
 }
 
 .main-content h1 {
@@ -61,7 +67,8 @@
 .main-content input,
 .main-content select,
 .modal input,
-.modal select {
+.modal select,
+.modal textarea {
   padding: 10px;
   margin-right: 10px;
   margin-bottom: 15px;
@@ -70,8 +77,14 @@
 }
 
 .modal input,
-.modal select {
+.modal select,
+.modal textarea {
   width: 100%;
+}
+
+.modal textarea {
+  min-height: 120px;
+  resize: vertical;
 }
 
 /* ===== BUTTONS ===== */
@@ -94,19 +107,23 @@ button:hover {
   margin-bottom: 20px;
 }
 
-/* Action buttons */
-button:nth-child(1) {
+.edit-btn {
   background: #16a34a;
   color: white;
 }
 
-button:nth-child(2) {
+.delete-btn {
   background: #dc2626;
   color: white;
 }
 
-button:nth-child(3) {
+.view-btn {
   background: #7c3aed;
+  color: white;
+}
+
+.cancel-btn {
+  background: gray;
   color: white;
 }
 
@@ -170,31 +187,7 @@ button:nth-child(3) {
   color: #111827;
 }
 
-.modal button {
-  margin-top: 8px;
-}
-
-/* Submit button */
-.modal button[type="submit"] {
-  background: green;
-  color: white;
-}
-
-.modal button[type="submit"]:hover {
-  background: darkgreen;
-}
-
-/* Cancel button */
-.cancel-btn {
-  background: gray;
-  color: white;
-}
-
-.cancel-btn:hover {
-  background: darkgray;
-}
-
-/* ===== STUDENT TABLE IN MODAL ===== */
+/* ===== STUDENT TABLE ===== */
 .modal .admin-table {
   margin-top: 15px;
   margin-bottom: 15px;
@@ -206,6 +199,57 @@ button:nth-child(3) {
   flex-direction: column;
 }
 
+/* ===== NOTIFICATION ===== */
+.notification-panel {
+  width: 100%;
+  max-width: 700px;
+  margin: 20px auto;
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.notification-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.notification-panel input,
+.notification-panel textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.notification-panel textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+.notification-save-btn {
+  width: fit-content;
+  background: #2563eb;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+}
+.sidebar ul li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  padding: 12px;
+  border-radius: 8px;
+  transition: 0.3s;
+}
+
+.sidebar ul li:hover {
+  background: #dbdcdf;
+}
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .admin-layout {
@@ -227,53 +271,4 @@ button:nth-child(3) {
   .modal {
     width: 95%;
   }
-}
-/* ===============================
-   NOTIFICATION SECTION
-=============================== */
-
-.notification-panel {
-  width: 100%;
-  max-width: 700px;
-  background: white;
-  padding: 25px;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-}
-
-.notification-form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.notification-form input,
-.notification-form textarea {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 14px;
-}
-.notification-panel {
-  max-width: 700px;
-  margin: 20px auto;   /* center */
-}
-.notification-form textarea {
-  min-height: 140px;
-  resize: vertical;
-}
-
-.notification-save-btn {
-  width: fit-content;
-  background: #2563eb;
-  color: white;
-  padding: 12px 20px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.notification-save-btn:hover {
-  background: #1d4ed8;
 }

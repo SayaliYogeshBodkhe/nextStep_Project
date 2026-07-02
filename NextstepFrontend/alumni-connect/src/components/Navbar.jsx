@@ -126,35 +126,36 @@ function Navbar() {
           )}
 
           {/* BOX */}
-          {showNotifications && (
-            <div className="notification-box">
-              <div className="notification-header">
-                <h3 className="notification-title">Notifications</h3>
-
-                <button
-                  className="close-notification-btn"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowNotifications(false);
-                  }}
-                >
-                  ✖
-                </button>
-              </div>
-
-              {/* LIST */}
-              {notifications.length > 0 ? (
-                notifications.map((n) => (
-                  <div className="notification-item" key={n._id}>
-                    <h2>{n.title}</h2>
+         {showNotifications && (
+          <div className="notification-box">
+            <div className="notification-header">
+              <h3>🔔 Notifications</h3>
+              <button
+                className="close-notification-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowNotifications(false);
+                }}
+              >
+                ✕
+              </button>
+            </div>
+            
+            {notifications.length > 0 ? (
+              notifications.map((n) => (
+                <div className="notification-item" key={n._id}>
+                  <div className="notification-icon">📢</div>
+                  <div className="notification-content">
+                    <h4>{n.title}</h4>
                     <p>{n.message}</p>
                   </div>
-                ))
-              ) : (
-                <p className="empty-notification">No Notifications</p>
-              )}
-            </div>
-          )}
+                </div>
+              ))
+            ) : (
+              <p className="empty-notification">No Notifications</p>
+            )}
+          </div>
+        )}
         </div>
 
         {/* LOGIN / LOGOUT */}
