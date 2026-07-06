@@ -25,7 +25,7 @@ import {
 import { faLinkedin, faGithub } from "@fortawesome/free-brands-svg-icons";
 
 function SingleProfile() {
-  const { id } = useParams();
+  const {} = useParams();
 
   // 🔥 Dummy Data (later replace with API)
   const user = {
