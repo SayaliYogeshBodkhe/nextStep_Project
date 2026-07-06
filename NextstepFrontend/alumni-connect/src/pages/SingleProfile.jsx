@@ -1,8 +1,7 @@
 import Navbar from "../components/Navbar";
 import "./singleprofile.css";
-import { useParams } from "react-router-dom";
 
-// ✅ IMPORT IMAGE (IMPORTANT)
+// ✅ IMPORT IMAGE
 import sayali from "../assets/sayali.jpg";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,15 +18,16 @@ import {
   faLink,
   faUserPlus,
   faDownload,
-  faEnvelope
+  faEnvelope,
 } from "@fortawesome/free-solid-svg-icons";
 
-import { faLinkedin, faGithub } from "@fortawesome/free-brands-svg-icons";
+import {
+  faLinkedin,
+  faGithub,
+} from "@fortawesome/free-brands-svg-icons";
 
 function SingleProfile() {
-  const {} = useParams();
-
-  // 🔥 Dummy Data (later replace with API)
+  // Dummy Data (Replace with API later)
   const user = {
     name: "Sayli Bhodke",
     role: "Software Development Engineer @ Google",
@@ -36,34 +36,34 @@ function SingleProfile() {
     cgpa: "9.2",
     package: "₹32 LPA",
     rank: "AIR 248",
-    image: sayali   // ✅ attach image here
+    image: sayali,
   };
 
   return (
     <>
       <Navbar />
 
-      {/* BACK */}
+      {/* Back Button */}
       <div className="back">
         <FontAwesomeIcon icon={faArrowLeft} /> Back to Placed Juniors
       </div>
 
-      {/* PROFILE CARD */}
+      {/* Profile Card */}
       <div className="profile-card">
-
-        {/* LEFT IMAGE */}
+        {/* Left */}
         <div className="left">
           <img
-            src={user.image}   // ✅ FIXED IMAGE
+            src={user.image}
             className="profile-img"
             alt="profile"
           />
         </div>
 
-        {/* CENTER */}
+        {/* Center */}
         <div className="center">
           <h1>
-            {user.name} <FontAwesomeIcon icon={faCircleCheck} />
+            {user.name}{" "}
+            <FontAwesomeIcon icon={faCircleCheck} />
           </h1>
 
           <p>
@@ -82,12 +82,16 @@ function SingleProfile() {
           </span>
 
           <div className="tags">
-            <span className="green">Placed {user.year}</span>
-            <span className="yellow">Top Company</span>
+            <span className="green">
+              Placed {user.year}
+            </span>
+            <span className="yellow">
+              Top Company
+            </span>
           </div>
         </div>
 
-        {/* RIGHT BUTTONS */}
+        {/* Right */}
         <div className="right">
           <button className="primary">
             <FontAwesomeIcon icon={faUserPlus} /> Connect
@@ -99,7 +103,7 @@ function SingleProfile() {
         </div>
       </div>
 
-      {/* STATS */}
+      {/* Stats */}
       <div className="stats">
         <div className="stat-box">
           <h2>{user.cgpa} ⭐</h2>
@@ -117,60 +121,82 @@ function SingleProfile() {
         </div>
       </div>
 
-      {/* CONTENT */}
+      {/* Content */}
       <div className="content">
-
-        {/* LEFT */}
+        {/* Left Content */}
         <div className="left-content">
-
           <div className="card">
-            <h3><FontAwesomeIcon icon={faUser} /> About</h3>
+            <h3>
+              <FontAwesomeIcon icon={faUser} /> About
+            </h3>
             <p>
-              Passionate software engineer skilled in full-stack development,
-              DSA and cloud technologies.
+              Passionate software engineer skilled in
+              full-stack development, DSA, cloud technologies,
+              and problem solving.
             </p>
           </div>
 
           <div className="card">
-            <h3><FontAwesomeIcon icon={faBriefcase} /> Placement Details</h3>
-            <p><b>Company:</b> Google</p>
-            <p><b>Role:</b> SDE</p>
-            <p><b>Location:</b> Bangalore</p>
+            <h3>
+              <FontAwesomeIcon icon={faBriefcase} /> Placement Details
+            </h3>
+
+            <p>
+              <b>Company:</b> Google
+            </p>
+
+            <p>
+              <b>Role:</b> Software Development Engineer
+            </p>
+
+            <p>
+              <b>Location:</b> Bangalore
+            </p>
           </div>
 
           <div className="card">
-            <h3><FontAwesomeIcon icon={faGraduationCap} /> Education</h3>
-            <p>B.Tech - PCCOE (2022-2026)</p>
+            <h3>
+              <FontAwesomeIcon icon={faGraduationCap} /> Education
+            </h3>
+
+            <p>B.Tech - PCCOE (2022 - 2026)</p>
             <p>CGPA: {user.cgpa}</p>
           </div>
-
         </div>
 
-        {/* RIGHT */}
+        {/* Right Content */}
         <div className="right-content">
-
           <div className="card">
-            <h3><FontAwesomeIcon icon={faCode} /> Skills</h3>
+            <h3>
+              <FontAwesomeIcon icon={faCode} /> Skills
+            </h3>
+
             <div className="skills">
               <span>Java</span>
               <span>Python</span>
               <span>React</span>
               <span>Node.js</span>
+              <span>MongoDB</span>
               <span>DSA</span>
             </div>
           </div>
 
           <div className="card">
-            <h3><FontAwesomeIcon icon={faTrophy} /> Achievements</h3>
+            <h3>
+              <FontAwesomeIcon icon={faTrophy} /> Achievements
+            </h3>
+
             <ul>
-              <li>500+ DSA problems solved</li>
-              <li>Google Kickstart Qualified</li>
-              <li>Topper in 3rd Year</li>
+              <li>500+ DSA Problems Solved</li>
+              <li>Google Kick Start Qualified</li>
+              <li>Topper in Third Year</li>
             </ul>
           </div>
 
           <div className="card">
-            <h3><FontAwesomeIcon icon={faLink} /> Connect</h3>
+            <h3>
+              <FontAwesomeIcon icon={faLink} /> Connect
+            </h3>
 
             <button className="primary full">
               <FontAwesomeIcon icon={faLinkedin} /> LinkedIn
@@ -184,9 +210,7 @@ function SingleProfile() {
               <FontAwesomeIcon icon={faEnvelope} /> Email
             </button>
           </div>
-
         </div>
-
       </div>
     </>
   );
