@@ -24,7 +24,7 @@ function Login() {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:5000/login", {
+      const res = await fetch("https://nextstep-project-rqyg.onrender.com/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -100,7 +100,7 @@ function Login() {
          <button
           className="google"
           onClick={() => {
-            window.open("http://localhost:5000/auth/google", "_self");
+            window.open("https://nextstep-project-rqyg.onrender.com/auth/google", "_self");
           }}
           >
           Continue with Google

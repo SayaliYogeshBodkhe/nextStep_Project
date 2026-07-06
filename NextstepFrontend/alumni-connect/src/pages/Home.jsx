@@ -21,7 +21,7 @@ function Home() {
 
   const getEvents = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/getEvents");
+      const res = await axios.get("https://nextstep-project-rqyg.onrender.com/getEvents");
 
       if (res.data.status === "ok") {
         setEvents(res.data.data);
@@ -68,7 +68,7 @@ function Home() {
     e.preventDefault();
 
     try {
-      const res = await axios.post("http://localhost:5000/registerEvent", {
+      const res = await axios.post("https://nextstep-project-rqyg.onrender.com/registerEvent", {
         eventId: selectedEvent._id,
         eventTitle: selectedEvent.title,
         name: formData.name,

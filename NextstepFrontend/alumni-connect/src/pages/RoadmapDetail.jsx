@@ -10,7 +10,7 @@ function RoadmapDetails() {
   useEffect(() => {
     const fetchRoadmap = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/getRoadmap/${id}`);
+        const res = await fetch(`https://nextstep-project-rqyg.onrender.com/getRoadmap/${id}`);
         const data = await res.json();
 
         if (data.status === "ok") {

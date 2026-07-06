@@ -18,7 +18,7 @@ function Events() {
   /* ================= FETCH EVENTS ================= */
   const fetchEvents = async () => {
     try {
-      const res = await fetch("http://localhost:5000/getEvents");
+      const res = await fetch("https://nextstep-project-rqyg.onrender.com/getEvents");
       const data = await res.json();
 
       if (data.status === "ok") {
@@ -53,7 +53,7 @@ function Events() {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:5000/registerEvent", {
+      const res = await fetch("https://nextstep-project-rqyg.onrender.com/registerEvent", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

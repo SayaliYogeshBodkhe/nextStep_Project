@@ -22,7 +22,7 @@ function Resources() {
   const fetchResources = async () => {
     try {
      const res = await fetch(
-      "http://localhost:5000/getResources"
+      "https://nextstep-project-rqyg.onrender.com/getResources"
     );
 
       const data = await res.json();

@@ -9,7 +9,7 @@ function Alumni() {
   const [connectAlumni, setConnectAlumni] = useState(null);
   const [message, setMessage] = useState("");
 
-  const API = "http://localhost:5000"; // ✅ LOCAL ONLY
+  const API = "https://nextstep-project-rqyg.onrender.com"; // ✅ LOCAL ONLY
 
   /* ================= FETCH ALUMNI ================= */
   useEffect(() => {

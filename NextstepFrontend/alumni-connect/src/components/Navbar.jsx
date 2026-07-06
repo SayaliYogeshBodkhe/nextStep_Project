@@ -9,7 +9,7 @@ function Navbar() {
   const navigate = useNavigate();
   const socketRef = useRef(null);
 
-  const BASE_URL = "http://localhost:5000";
+  const BASE_URL = "https://nextstep-project-rqyg.onrender.com";
   // deployed असल्यास:
   // const BASE_URL = "https://nextstep-project-1.onrender.com";
 

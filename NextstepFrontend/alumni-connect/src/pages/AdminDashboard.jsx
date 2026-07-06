@@ -104,7 +104,7 @@ function AdminDashboard() {
 
 const fetchUsers = async () => {
   try {
-    const res = await fetch("http://localhost:5000/getUsers");
+    const res = await fetch("https://nextstep-project-rqyg.onrender.com/getUsers");
     const data = await res.json();
 
     if (data.status === "ok") {
@@ -117,7 +117,7 @@ const fetchUsers = async () => {
 
 const fetchAlumni = async () => {
   try {
-    const res = await fetch("http://localhost:5000/getAlumni");
+    const res = await fetch("https://nextstep-project-rqyg.onrender.com/getAlumni");
     const data = await res.json();
 
     if (data.status === "ok") {
@@ -130,7 +130,7 @@ const fetchAlumni = async () => {
 
 const fetchEvents = async () => {
   try {
-    const res = await fetch("http://localhost:5000/getEvents");
+    const res = await fetch("https://nextstep-project-rqyg.onrender.com/getEvents");
     const data = await res.json();
 
     if (data.status === "ok") {
@@ -143,7 +143,7 @@ const fetchEvents = async () => {
 
 const fetchRoadmaps = async () => {
   try {
-    const res = await fetch("http://localhost:5000/getRoadmaps");
+    const res = await fetch("https://nextstep-project-rqyg.onrender.com/getRoadmaps");
     const data = await res.json();
 
     if (data.status === "ok") {
@@ -156,7 +156,7 @@ const fetchRoadmaps = async () => {
 
 const fetchResources = async () => {
   try {
-    const res = await fetch("http://localhost:5000/getResources");
+    const res = await fetch("https://nextstep-project-rqyg.onrender.com/getResources");
     const data = await res.json();
 
     if (data.status === "ok") {
@@ -169,7 +169,7 @@ const fetchResources = async () => {
 
 const fetchNotifications = async () => {
   try {
-    const res = await fetch("http://localhost:5000/getNotifications");
+    const res = await fetch("https://nextstep-project-rqyg.onrender.com/getNotifications");
     const data = await res.json();
 
     if (data.status === "ok") {
@@ -182,7 +182,7 @@ const fetchNotifications = async () => {
 // ================= SAVE / UPDATE FUNCTIONS =================
 const updateNotification = async () => {
   try {
-    await fetch(`http://localhost:5000/updateNotification/${editId}`, {
+    await fetch(`https://nextstep-project-rqyg.onrender.com/updateNotification/${editId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -212,7 +212,7 @@ const saveNotification = async () => {
   }
 
   try {
-    await fetch("http://localhost:5000/addNotification", {
+    await fetch("https://nextstep-project-rqyg.onrender.com/addNotification", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -245,7 +245,7 @@ const saveAlumni = async () => {
       formData.append("photo", alumniForm.photo);
     }
 
-    await fetch("http://localhost:5000/addAlumni", {
+    await fetch("https://nextstep-project-rqyg.onrender.com/addAlumni", {
       method: "POST",
       body: formData,
     });
@@ -270,7 +270,7 @@ const updateAlumni = async () => {
       formData.append("photo", alumniForm.photo);
     }
 
-    await fetch(`http://localhost:5000/updateAlumni/${editId}`, {
+    await fetch(`https://nextstep-project-rqyg.onrender.com/updateAlumni/${editId}`, {
       method: "PUT",
       body: formData,
     });
@@ -286,7 +286,7 @@ const updateAlumni = async () => {
 //Update Event
 const updateEvent = async () => {
   try {
-    await fetch(`http://localhost:5000/updateEvent/${editId}`, {
+    await fetch(`https://nextstep-project-rqyg.onrender.com/updateEvent/${editId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -325,7 +325,7 @@ const formatTime12hr = (time) => {
 };
 const saveEvent = async () => {
   try {
-    await fetch("http://localhost:5000/addEvent", {
+    await fetch("https://nextstep-project-rqyg.onrender.com/addEvent", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -343,7 +343,7 @@ const saveEvent = async () => {
 // Update Roadmap
 const updateRoadmap = async () => {
   try {
-    await fetch(`http://localhost:5000/updateRoadmap/${editId}`, {
+    await fetch(`https://nextstep-project-rqyg.onrender.com/updateRoadmap/${editId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -362,7 +362,7 @@ const updateRoadmap = async () => {
 // Save Roadmap
 const saveRoadmap = async () => {
   try {
-    await fetch("http://localhost:5000/addRoadmap", {
+    await fetch("https://nextstep-project-rqyg.onrender.com/addRoadmap", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -379,7 +379,7 @@ const saveRoadmap = async () => {
 //Update Resources
 const updateResource = async () => {
   try {
-    await fetch(`http://localhost:5000/updateResource/${editId}`, {
+    await fetch(`https://nextstep-project-rqyg.onrender.com/updateResource/${editId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -398,7 +398,7 @@ const updateResource = async () => {
 // Save Resource
 const saveResource = async () => {
   try {
-    await fetch("http://localhost:5000/addResource", {
+    await fetch("https://nextstep-project-rqyg.onrender.com/addResource", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -416,7 +416,7 @@ const saveResource = async () => {
 // Update User
 const updateUser = async () => {
   try {
-    await fetch(`http://localhost:5000/updateUser/${editId}`, {
+    await fetch(`https://nextstep-project-rqyg.onrender.com/updateUser/${editId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -434,7 +434,7 @@ const updateUser = async () => {
 
 const deleteUser = async (id) => {
   try {
-    await fetch(`http://localhost:5000/deleteUser/${id}`, {
+    await fetch(`https://nextstep-project-rqyg.onrender.com/deleteUser/${id}`, {
       method: "DELETE",
     });
     fetchUsers();
@@ -445,7 +445,7 @@ const deleteUser = async (id) => {
 
 const deleteAlumni = async (id) => {
   try {
-    await fetch(`http://localhost:5000/deleteAlumni/${id}`, {
+    await fetch(`https://nextstep-project-rqyg.onrender.com/deleteAlumni/${id}`, {
       method: "DELETE",
     });
     fetchAlumni();
@@ -456,7 +456,7 @@ const deleteAlumni = async (id) => {
 
 const deleteEvent = async (id) => {
   try {
-    await fetch(`http://localhost:5000/deleteEvent/${id}`, {
+    await fetch(`https://nextstep-project-rqyg.onrender.com/deleteEvent/${id}`, {
       method: "DELETE",
     });
     fetchEvents();
@@ -467,7 +467,7 @@ const deleteEvent = async (id) => {
 
 const deleteRoadmap = async (id) => {
   try {
-    await fetch(`http://localhost:5000/deleteRoadmap/${id}`, {
+    await fetch(`https://nextstep-project-rqyg.onrender.com/deleteRoadmap/${id}`, {
       method: "DELETE",
     });
     fetchRoadmaps();
@@ -478,7 +478,7 @@ const deleteRoadmap = async (id) => {
 
 const deleteResource = async (id) => {
   try {
-    await fetch(`http://localhost:5000/deleteResource/${id}`, {
+    await fetch(`https://nextstep-project-rqyg.onrender.com/deleteResource/${id}`, {
       method: "DELETE",
     });
     fetchResources();
@@ -489,7 +489,7 @@ const deleteResource = async (id) => {
 
 const deleteNotification = async (id) => {
   try {
-    await fetch(`http://localhost:5000/deleteNotification/${id}`, {
+    await fetch(`https://nextstep-project-rqyg.onrender.com/deleteNotification/${id}`, {
       method: "DELETE",
     });
     fetchNotifications();
@@ -586,7 +586,7 @@ const getEventStatus = (event) => {
 const viewStudents = async (id) => {
   try {
     const res = await fetch(
-      `http://localhost:5000/getEventStudents/${id}`
+      `https://nextstep-project-rqyg.onrender.com/getEventStudents/${id}`
     );
     const data = await res.json();
 
