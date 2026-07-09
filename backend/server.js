@@ -33,25 +33,26 @@ const io = new Server(server, {
 
 app.set("io", io);
 
-/* SOCKET CONNECTION */
-io.on("connection", (socket) => {
-  console.log("User connected:", socket.id);
-
-  socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
-  });
+/* SOCKET.IO */
+const io = new Server(server, {
+  cors: {
+    origin: [
+      "http://localhost:3000",
+      "https://next-step-project-three.vercel.app",
+    ],
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
 });
 
-/* DB */
-const connectDB = require("./config/db");
-connectDB();
+app.set("io", io);
 
-/* MIDDLEWARE (IMPORTANT ORDER) */
+/* MIDDLEWARE */
 app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "https://your-frontend-vercel-url.vercel.app",
+      "https://next-step-project-three.vercel.app",
     ],
     credentials: true,
   })

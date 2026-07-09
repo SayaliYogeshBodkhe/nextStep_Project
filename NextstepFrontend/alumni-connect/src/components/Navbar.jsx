@@ -11,7 +11,7 @@ function Navbar() {
 
   const BASE_URL = "https://nextstep-project-rqyg.onrender.com";
   // deployed असल्यास:
-  // const BASE_URL = "https://nextstep-project-1.onrender.com";
+  // const BASE_URL = "https://https://nextstep-project-rqyg.onrender.com";
 
   /* USER */
   const [userType, setUserType] = useState(

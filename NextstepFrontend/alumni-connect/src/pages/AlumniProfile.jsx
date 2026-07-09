@@ -28,7 +28,7 @@ function AlumniProfile() {
 
       <div className="profile-card">
         <img
-          src={`https://nextstep-project-1.onrender.com/uploads/${alumni.photo}`}
+          src={`https://https://nextstep-project-rqyg.onrender.com/uploads/${alumni.photo}`}
           alt={alumni.name}
           className="profile-img"
         />
