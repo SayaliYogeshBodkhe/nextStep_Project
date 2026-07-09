@@ -16,7 +16,13 @@ const transporter =
         process.env.EMAIL_PASS,
     },
   });
-
+transporter.verify((error, success) => {
+  if (error) {
+    console.log("Mail Error:", error);
+  } else {
+    console.log("Mail Server Ready");
+  }
+});
 /* SEND CONNECTION MAIL */
 const sendConnectionMail =
   async (req, res) => {

@@ -155,15 +155,15 @@ exports.sendOtp = async (req, res) => {
         "OTP Sent Successfully",
     });
 
-  } catch (error) {
-    console.log(error);
+  } 
+   catch (error) {
+  console.error("SEND OTP ERROR:", error);
 
-    res.json({
-      status: "error",
-      message:
-        "OTP Send Failed",
-    });
-  }
+  res.status(500).json({
+    status: "error",
+    message: error.message,
+  });
+}
 };
 
 /* ================= VERIFY OTP ================= */
