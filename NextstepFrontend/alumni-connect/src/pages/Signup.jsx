@@ -37,8 +37,9 @@ function Signup() {
 
 
 /* SEND OTP */
+/* SEND OTP */
 const sendOtp = async () => {
-  if (!formData.email) {
+  if (!formData.email.trim()) {
     alert("Enter Email First");
     return;
   }
@@ -59,15 +60,17 @@ const sendOtp = async () => {
 
     const data = await res.json();
 
-    if (data.status === "ok") {
+    console.log("OTP Response:", data);
+
+    if (res.ok && data.status === "ok") {
       alert("OTP Sent Successfully");
       setOtpSent(true);
     } else {
-      alert(data.message);
+      alert(data.message || "Failed to send OTP");
     }
   } catch (err) {
-    console.log(err);
-    alert("OTP Send Failed");
+    console.error("Send OTP Error:", err);
+    alert("Unable to connect to the server.");
   }
 };
   /* SIGNUP */
