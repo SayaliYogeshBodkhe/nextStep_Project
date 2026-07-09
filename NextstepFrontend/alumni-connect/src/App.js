@@ -27,7 +27,7 @@ function App() {
     const getCurrentUser = async () => {
       try {
         const res = await fetch(
-          "https://https://nextstep-project-rqyg.onrender.com/current-user",
+          "https://nextstep-project-rqyg.onrender.com/current-user",
           {
             credentials: "include",
           }
