@@ -35,42 +35,41 @@ function Signup() {
     });
   };
 
-  /* SEND OTP */
-  const sendOtp = async () => {
-    if (!formData.email) {
-      alert("Enter Email First");
-      return;
-    }
 
-    try {
-      const res = await fetch(
-        "https://https://nextstep-project-rqyg.onrender.com/sendOtp",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-          body: JSON.stringify({
-            email: formData.email
-              .trim()
-              .toLowerCase(),
-          }),
-        }
-      );
+/* SEND OTP */
+const sendOtp = async () => {
+  if (!formData.email) {
+    alert("Enter Email First");
+    return;
+  }
 
-      const data = await res.json();
-
-      if (data.status === "ok") {
-        alert("OTP Sent Successfully 📧");
-        setOtpSent(true);
-      } else {
-        alert(data.message);
+  try {
+    const res = await fetch(
+      "https://nextstep-project-rqyg.onrender.com/sendOtp",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email.trim().toLowerCase(),
+        }),
       }
-    } catch {
-      alert("OTP Send Failed");
+    );
+
+    const data = await res.json();
+
+    if (data.status === "ok") {
+      alert("OTP Sent Successfully 📧");
+      setOtpSent(true);
+    } else {
+      alert(data.message);
     }
-  };
+  } catch (error) {
+    console.error(error);
+    alert("OTP Send Failed");
+  }
+};
 
   /* SIGNUP */
   const handleSubmit = async (e) => {
@@ -115,7 +114,7 @@ function Signup() {
       setLoading(true);
 
       const res = await fetch(
-        "https://https://nextstep-project-rqyg.onrender.com/verifyOtpSignup",
+        "https://nextstep-project-rqyg.onrender.com/verifyOtpSignup",
         {
           method: "POST",
           headers: {
