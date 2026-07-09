@@ -60,17 +60,16 @@ const sendOtp = async () => {
     const data = await res.json();
 
     if (data.status === "ok") {
-      alert("OTP Sent Successfully 📧");
+      alert("OTP Sent Successfully");
       setOtpSent(true);
     } else {
       alert(data.message);
     }
-  } catch (error) {
-    console.error(error);
+  } catch (err) {
+    console.log(err);
     alert("OTP Send Failed");
   }
 };
-
   /* SIGNUP */
   const handleSubmit = async (e) => {
     e.preventDefault();
