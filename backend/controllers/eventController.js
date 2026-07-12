@@ -42,10 +42,12 @@ exports.addEvent = async (req, res) => {
   try {
     const { title, date, time, mode, zoomLink } = req.body;
 
+    // Combine date and time into one Date object
+    const eventDateTime = new Date(`${date}T${time}`);
+
     await Event.create({
       title,
-      date,
-      time,
+      eventDateTime,
       mode,
       zoomLink,
     });
@@ -53,8 +55,11 @@ exports.addEvent = async (req, res) => {
     res.json({ status: "ok" });
 
   } catch (error) {
-    console.log("ADD EVENT ERROR:", error);
-    res.json({ status: "error" });
+    console.error("ADD EVENT ERROR:", error);
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+    });
   }
 };
 
