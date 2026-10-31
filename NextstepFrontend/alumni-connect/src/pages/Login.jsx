@@ -6,12 +6,13 @@ import React, { useState } from "react";
 function Login() {
   const navigate = useNavigate();
 
+  const API_URL = process.env.REACT_APP_API_URL;
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
-  // Handle input change
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -19,12 +20,11 @@ function Login() {
     });
   };
 
-  // Handle login
   const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:5000/login", {
+      const res = await fetch(`${API_URL}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -36,14 +36,12 @@ function Login() {
       console.log("Login Response:", data);
 
       if (res.ok) {
-        alert("Login successful ✅");
+        alert("Login successful!");
 
-        const role = data.userType; // "Admin" or "User"
+        const role = data.userType;
 
-        // Save role in localStorage
         localStorage.setItem("userType", role);
 
-        // Redirect based on role
         if (role === "Admin") {
           navigate("/admin-dashboard");
         } else {
@@ -51,12 +49,12 @@ function Login() {
         }
 
       } else {
-        alert(data.message || "Login failed ❌");
+        alert(data.message || "Login failed");
       }
 
     } catch (error) {
-      console.error("Error:", error);
-      alert("Server error ❌");
+      console.error("Login Error:", error);
+      alert("Server error");
     }
   };
 
@@ -69,7 +67,6 @@ function Login() {
           <h2>Login to your account</h2>
 
           <form onSubmit={handleLogin}>
-            {/* Email */}
             <input
               type="email"
               name="email"
@@ -78,7 +75,6 @@ function Login() {
               required
             />
 
-            {/* Password */}
             <input
               type="password"
               name="password"
@@ -87,27 +83,22 @@ function Login() {
               required
             />
 
-            {/* Login Button */}
             <button type="submit">Login</button>
           </form>
 
-          {/* Divider */}
           <div className="divider">
             <span>OR</span>
           </div>
 
-          {/* Social Buttons */}
-         <button
-          className="google"
-          onClick={() => {
-            window.open("http://localhost:5000/auth/google", "_self");
-          }}
+          <button
+            className="google"
+            onClick={() => {
+              window.open(`${API_URL}/auth/google`, "_self");
+            }}
           >
-          Continue with Google
-        </button>
-         
+            Continue with Google
+          </button>
 
-          {/* Signup Link */}
           <p>
             Don't have an account?{" "}
             <Link to="/signup">Sign up</Link>

@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
@@ -6,6 +7,9 @@ import "./signup.css";
 
 function Signup() {
   const navigate = useNavigate();
+
+  // Render Backend API URL
+  const API_URL = process.env.REACT_APP_API_URL;
 
   const [userType, setUserType] = useState("");
   const [secretKey, setSecretKey] = useState("");
@@ -28,6 +32,7 @@ function Signup() {
     confirmPassword: "",
   });
 
+  // Handle input change
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -42,22 +47,21 @@ function Signup() {
       return;
     }
 
+    if (!API_URL) {
+      alert("Backend API URL is missing!");
+      return;
+    }
+
     try {
-      const res = await fetch(
-        "http://localhost:5000/sendOtp",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-          body: JSON.stringify({
-            email: formData.email
-              .trim()
-              .toLowerCase(),
-          }),
-        }
-      );
+      const res = await fetch(`${API_URL}/sendOtp`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email.trim().toLowerCase(),
+        }),
+      });
 
       const data = await res.json();
 
@@ -65,9 +69,10 @@ function Signup() {
         alert("OTP Sent Successfully 📧");
         setOtpSent(true);
       } else {
-        alert(data.message);
+        alert(data.message || "OTP sending failed");
       }
-    } catch {
+    } catch (error) {
+      console.error("OTP Error:", error);
       alert("OTP Send Failed");
     }
   };
@@ -81,27 +86,17 @@ function Signup() {
       return;
     }
 
-    if (
-      userType === "Admin" &&
-      !secretKey
-    ) {
+    if (userType === "Admin" && !secretKey) {
       alert("Enter Admin Secret Key");
       return;
     }
 
-    if (
-      formData.password.length < 6
-    ) {
-      alert(
-        "Password must be at least 6 characters"
-      );
+    if (formData.password.length < 6) {
+      alert("Password must be at least 6 characters");
       return;
     }
 
-    if (
-      formData.password !==
-      formData.confirmPassword
-    ) {
+    if (formData.password !== formData.confirmPassword) {
       alert("Passwords do not match");
       return;
     }
@@ -111,64 +106,46 @@ function Signup() {
       return;
     }
 
+    if (!API_URL) {
+      alert("Backend API URL is missing!");
+      return;
+    }
+
     try {
       setLoading(true);
 
-      const res = await fetch(
-        "http://localhost:5000/verifyOtpSignup",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
+      const res = await fetch(`${API_URL}/verifyOtpSignup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
 
-          body: JSON.stringify({
-            userType,
-            secretKey,
-            otp,
+        body: JSON.stringify({
+          userType,
+          secretKey,
+          otp,
 
-            name:
-              formData.name.trim(),
+          name: formData.name.trim(),
+          phone: formData.phone.trim(),
+          email: formData.email.trim().toLowerCase(),
+          gender: formData.gender,
+          password: formData.password,
+        }),
+      });
 
-            phone:
-              formData.phone.trim(),
+      const data = await res.json();
 
-            email:
-              formData.email
-                .trim()
-                .toLowerCase(),
-
-            gender:
-              formData.gender,
-
-            password:
-              formData.password,
-          }),
-        }
-      );
-
-      const data =
-        await res.json();
-
-      setLoading(false);
-
-      if (
-        data.status === "ok"
-      ) {
-        alert(
-          "Signup Successful ✅"
-        );
-
+      if (res.ok && data.status === "ok") {
+        alert("Signup Successful ✅");
         navigate("/login");
       } else {
-        alert(
-          data.message
-        );
+        alert(data.message || "Signup failed");
       }
-    } catch {
-      setLoading(false);
+    } catch (error) {
+      console.error("Signup Error:", error);
       alert("Server Error ❌");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -178,36 +155,22 @@ function Signup() {
 
       <div className="signup-container">
         <div className="signup-left">
-          <img
-            src={logo}
-            alt="Logo"
-          />
+          <img src={logo} alt="Logo" />
         </div>
 
         <div className="signup-right">
-          <h2>
-            Welcome To NextStep
-          </h2>
+          <h2>Welcome To NextStep</h2>
 
           {/* USER TYPE */}
           <div className="radio-group">
-            <label>
-              Register As:
-            </label>
+            <label>Register As:</label>
 
             <label>
               <input
                 type="radio"
                 value="User"
-                checked={
-                  userType ===
-                  "User"
-                }
-                onChange={(e) =>
-                  setUserType(
-                    e.target.value
-                  )
-                }
+                checked={userType === "User"}
+                onChange={(e) => setUserType(e.target.value)}
               />
               User
             </label>
@@ -216,47 +179,31 @@ function Signup() {
               <input
                 type="radio"
                 value="Admin"
-                checked={
-                  userType ===
-                  "Admin"
-                }
-                onChange={(e) =>
-                  setUserType(
-                    e.target.value
-                  )
-                }
+                checked={userType === "Admin"}
+                onChange={(e) => setUserType(e.target.value)}
               />
               Admin
             </label>
           </div>
 
           {/* ADMIN KEY */}
-          {userType ===
-            "Admin" && (
+          {userType === "Admin" && (
             <input
               type="password"
               placeholder="Enter Admin Secret Key"
-              onChange={(e) =>
-                setSecretKey(
-                  e.target.value
-                )
-              }
+              value={secretKey}
+              onChange={(e) => setSecretKey(e.target.value)}
             />
           )}
 
           {/* FORM */}
-          <form
-            onSubmit={
-              handleSubmit
-            }
-          >
+          <form onSubmit={handleSubmit}>
             <input
               type="text"
               name="name"
               placeholder="Enter Name"
-              onChange={
-                handleChange
-              }
+              value={formData.name}
+              onChange={handleChange}
               required
             />
 
@@ -264,9 +211,8 @@ function Signup() {
               type="text"
               name="phone"
               placeholder="Enter Phone"
-              onChange={
-                handleChange
-              }
+              value={formData.phone}
+              onChange={handleChange}
               required
             />
 
@@ -274,9 +220,8 @@ function Signup() {
               type="email"
               name="email"
               placeholder="Enter Email"
-              onChange={
-                handleChange
-              }
+              value={formData.email}
+              onChange={handleChange}
               required
             />
 
@@ -284,6 +229,7 @@ function Signup() {
             <button
               type="button"
               onClick={sendOtp}
+              disabled={loading}
             >
               Send OTP
             </button>
@@ -294,62 +240,35 @@ function Signup() {
                 type="text"
                 placeholder="Enter OTP"
                 value={otp}
-                onChange={(e) =>
-                  setOtp(
-                    e.target.value
-                  )
-                }
+                onChange={(e) => setOtp(e.target.value)}
                 required
               />
             )}
 
             <select
               name="gender"
-              onChange={
-                handleChange
-              }
+              value={formData.gender}
+              onChange={handleChange}
               required
             >
-              <option value="">
-                Select Gender
-              </option>
-
-              <option value="Male">
-                Male
-              </option>
-
-              <option value="Female">
-                Female
-              </option>
-
-              <option value="Other">
-                Other
-              </option>
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
             </select>
 
             {/* PASSWORD */}
             <div className="password-box">
               <input
-                type={
-                  showPassword
-                    ? "text"
-                    : "password"
-                }
+                type={showPassword ? "text" : "password"}
                 name="password"
                 placeholder="Enter Password"
-                onChange={
-                  handleChange
-                }
+                value={formData.password}
+                onChange={handleChange}
                 required
               />
 
-              <span
-                onClick={() =>
-                  setShowPassword(
-                    !showPassword
-                  )
-                }
-              >
+              <span onClick={() => setShowPassword(!showPassword)}>
                 👁️
               </span>
             </div>
@@ -358,38 +277,27 @@ function Signup() {
             <div className="password-box">
               <input
                 type={
-                  showConfirmPassword
-                    ? "text"
-                    : "password"
+                  showConfirmPassword ? "text" : "password"
                 }
                 name="confirmPassword"
                 placeholder="Confirm Password"
-                onChange={
-                  handleChange
-                }
+                value={formData.confirmPassword}
+                onChange={handleChange}
                 required
               />
 
               <span
                 onClick={() =>
-                  setShowConfirmPassword(
-                    !showConfirmPassword
-                  )
+                  setShowConfirmPassword(!showConfirmPassword)
                 }
               >
                 👁️
               </span>
             </div>
 
-            <button
-              type="submit"
-              disabled={
-                loading
-              }
-            >
-              {loading
-                ? "Creating..."
-                : "Create Account"}
+            {/* SUBMIT BUTTON */}
+            <button type="submit" disabled={loading}>
+              {loading ? "Creating..." : "Create Account"}
             </button>
           </form>
         </div>

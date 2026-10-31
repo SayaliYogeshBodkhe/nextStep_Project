@@ -1,3 +1,4 @@
+
 require("dotenv").config();
 
 const express = require("express");
@@ -18,14 +19,45 @@ const mailRoutes = require("./routes/mailRoutes");
 const roadmapRoutes = require("./routes/roadmapRoutes");
 const resourceRoutes = require("./routes/resourceRoutes");
 
+/* DATABASE CONNECTION */
+const connectDB = require("./config/db");
+
 /* APP + SERVER */
 const app = express();
 const server = http.createServer(app);
 
+/* CORS CONFIGURATION */
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://next-step-project-three.vercel.app",
+  // Add your actual frontend URL here if it is different.
+];
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
+
+/* MIDDLEWARE */
+app.use(express.json());
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "mysecret",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 /* SOCKET.IO */
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:3000"],
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -42,34 +74,6 @@ io.on("connection", (socket) => {
   });
 });
 
-/* DB */
-const connectDB = require("./config/db");
-connectDB();
-
-/* MIDDLEWARE (IMPORTANT ORDER) */
-app.use(
-  cors({
-    origin: [
-      "http://localhost:3000",
-      "https://your-frontend-vercel-url.vercel.app",
-    ],
-    credentials: true,
-  })
-);
-
-app.use(express.json());
-
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || "mysecret",
-    resave: false,
-    saveUninitialized: false,
-  })
-);
-
-app.use(passport.initialize());
-app.use(passport.session());
-
 /* STATIC FILES */
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
@@ -77,9 +81,11 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.get("/current-user", (req, res) => {
   res.json({ user: req.user || null });
 });
+
 app.get("/", (req, res) => {
   res.send("Backend LIVE 🚀");
 });
+
 app.use(authRoutes);
 app.use(notificationRoutes);
 app.use(alumniRoutes);
@@ -89,9 +95,20 @@ app.use(mailRoutes);
 app.use(roadmapRoutes);
 app.use(resourceRoutes);
 
-/* START SERVER */
+/* START SERVER AFTER DATABASE CONNECTS */
 const PORT = process.env.PORT || 5000;
 
-server.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
+async function startServer() {
+  try {
+    await connectDB();
+
+    server.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("❌ Failed to connect to database:", error.message);
+    process.exit(1);
+  }
+}
+
+startServer();
