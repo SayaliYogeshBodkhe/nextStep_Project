@@ -1,3 +1,4 @@
+
 require("dotenv").config();
 
 const express = require("express");
@@ -8,10 +9,8 @@ const path = require("path");
 const http = require("http");
 const { Server } = require("socket.io");
 
-/* DATABASE */
 const connectDB = require("./config/db");
 
-/* ROUTES */
 const authRoutes = require("./routes/authRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 const alumniRoutes = require("./routes/alumniRoutes");
@@ -21,40 +20,14 @@ const mailRoutes = require("./routes/mailRoutes");
 const roadmapRoutes = require("./routes/roadmapRoutes");
 const resourceRoutes = require("./routes/resourceRoutes");
 
-/* APP + SERVER */
 const app = express();
 const server = http.createServer(app);
 
-/* CONNECT DATABASE */
-connectDB();
-
-/* ALLOWED ORIGINS */
 const allowedOrigins = [
   "http://localhost:3000",
   "https://next-step-project-three.vercel.app",
 ];
 
-/* SOCKET.IO */
-const io = new Server(server, {
-  cors: {
-    origin: allowedOrigins,
-    methods: ["GET", "POST"],
-    credentials: true,
-  },
-});
-
-app.set("io", io);
-
-/* SOCKET CONNECTION */
-io.on("connection", (socket) => {
-  console.log("User connected:", socket.id);
-
-  socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
-  });
-});
-
-/* MIDDLEWARE */
 app.use(
   cors({
     origin: allowedOrigins,
@@ -75,16 +48,32 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-/* STATIC FILES */
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
-/* ROUTES */
-app.get("/", (req, res) => {
-  res.send("Backend LIVE 🚀");
+const io = new Server(server, {
+  cors: {
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
 });
+
+app.set("io", io);
+
+io.on("connection", (socket) => {
+  console.log("User connected:", socket.id);
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected:", socket.id);
+  });
+});
+
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.get("/current-user", (req, res) => {
   res.json({ user: req.user || null });
+});
+
+app.get("/", (req, res) => {
+  res.send("Backend LIVE 🚀");
 });
 
 app.use(authRoutes);
@@ -96,9 +85,19 @@ app.use(mailRoutes);
 app.use(roadmapRoutes);
 app.use(resourceRoutes);
 
-/* START SERVER */
 const PORT = process.env.PORT || 5000;
 
-server.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
+async function startServer() {
+  try {
+    await connectDB();
+
+    server.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("❌ Failed to connect to database:", error.message);
+    process.exit(1);
+  }
+}
+
+startServer();
